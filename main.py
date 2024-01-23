@@ -1,5 +1,5 @@
 import psycopg2
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
@@ -22,12 +22,12 @@ def register():
     conn.commit()
     cur.close()
     conn.close()
-    return 'Страница регистрации'
+    return render_template('register.html')
 
 
 @app.route('/login')
 def login():
-    return 'Страница авторизации'
+    return render_template('login.html')
 
 
 if __name__ == '__main__':
