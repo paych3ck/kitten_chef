@@ -19,7 +19,7 @@
       margin: 50px auto;
       padding-bottom: 20px;
       box-shadow: 2px 2px 10px #412701;
-      background-color:#7a3d1a;
+      background-color: #7a3d1a;
       border-radius: 10px;
       background-size: cover;
       background-position: center;
@@ -64,12 +64,13 @@
     }
   </style>
 </head>
+
 <body style="background-color: #EED8BF;">
   <h1>Авторизация</h1>
   <div class="container">
-    <form class="contact-form">
+    <form class="contact-form" method="post">
       <label for="email">E-MAIL</label>
-      <input type="text" id="email">
+      <input type="text" name='email' id="email">
       <label for="password">ПАРОЛЬ</label>
       <input type="text" id="password">
       <input class="submit" value="ВХОД В АККАУНТ" type="submit">
