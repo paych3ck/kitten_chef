@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Список сообщений</title>
+</head>
+
+<body>
+    <h1>Список сообщений</h1>
+
+    <ul>
+        {% for message in messages %}
+        <li>
+            <strong>Отправитель:</strong> {{ current_user.username }}<br>
+            <strong>Получатель:</strong> {{ message.receiver_name }}<br>
+            <strong>Дата и время:</strong> {{ message.sent_at }}<br>
+            <strong>Сообщение:</strong> {{ message.content }}
+        </li>
+        <hr>
+        {% endfor %}
+    </ul>
+
+</body>
+
+</html>

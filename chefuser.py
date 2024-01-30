@@ -7,27 +7,31 @@ class User(UserMixin):
 
     @property
     def id(self):
-        return str(self.__user[0])
+        return str(self.__user['user_id'])
 
     @property
     def username(self):
-        return str(self.__user[1])
+        return str(self.__user['username'])
 
     @property
     def email(self):
-        return str(self.__user[2])
+        return str(self.__user['email'])
 
     @property
     def status(self):
-        return str(self.__user[4])
+        return str(self.__user['status'])
 
     @property
     def profile_picture(self):
-        return str(self.__user[5])
+        return str(self.__user['profile_picture'])
 
     @property
     def registration_date(self):
-        return str(self.__user[6])
+        return str(self.__user['registration_date'])
+
+    @property
+    def is_premium(self):
+        return str(self.__user['is_premium'])
 
     def is_active(self):
         return True
