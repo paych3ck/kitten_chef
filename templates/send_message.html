@@ -1,22 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Форма отправки сообщения</title>
+    <meta charset="UTF-8">
+    <title>Чат</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+            var room = "{{ receiver_username }}"; // receiver_username - переменная Flask, передаваемая в шаблон
+            var username = "{{ current_user.username }}"; // Имя текущего пользователя
+
+            socket.on('connect', function () {
+                socket.emit('join', { 'username': username, 'room': room });
+            });
+
+            // Функция для отправки сообщений
+            document.querySelector('#send_message').onclick = () => {
+                var message = document.querySelector('#message').value;
+                socket.emit('send_message', { 'message': message, 'username': username, 'room': room });
+                document.querySelector('#message').value = '';
+            };
+
+            // Прием сообщений и добавление их в чат
+            socket.on('receive_message', function (data) {
+                const p = document.createElement('p');
+                p.innerHTML = `<b>${data.username}</b>: ${data.message}`;
+                document.querySelector('#messages').append(p);
+            });
+        });
+    </script>
 </head>
 
 <body>
-    <h1>Отправка сообщения</h1>
-
-    <form method="POST">
-        <label for="message">Сообщение:</label>
-        <textarea id="message" name="message" rows="4" cols="50" required></textarea>
-
-        <br>
-        <!-- Кнопка отправки -->
-        <input type="submit" value="Отправить">
-    </form>
-
+    <h1>Чат с {{ receiver_username }}</h1>
+    <div id="messages" style="margin-bottom: 20px;"></div>
+    <textarea id="message" name="message" rows="2" cols="50"></textarea>
+    <button id="send_message">Отправить</button>
+    <br>
     <a href="/">Вернуться на главную страницу</a>
 </body>
 

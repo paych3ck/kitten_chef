@@ -1,14 +1,18 @@
 from dbconnection import DbConnection
 from chefuser import User
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, \
+    redirect, url_for, flash, abort
 from flask_login import LoginManager, login_user, \
     logout_user, login_required, current_user
+from flask_socketio import SocketIO, send, emit, \
+    join_room, leave_room, send
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
+socketio = SocketIO(app)
 login_manager = LoginManager(app)
 db = DbConnection('localhost', 'KittenChef', 'postgres', 'postgres')
 
@@ -19,6 +23,19 @@ def load_user(user_id):
     return User(user_data)
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('page_not_found.html'), 404
+
+
+@app.route('/')
+def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('feed'))
+
+    return redirect(url_for('login'))
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -26,6 +43,7 @@ def register():
         email = request.form['email']
         password_hash = generate_password_hash(request.form['password'])
         db.add_user((username, email, password_hash))
+        return redirect(url_for('login'))
 
     return render_template('register.html')
 
@@ -39,9 +57,9 @@ def login():
                                              request.form['password']):
             userlogin = User(user_data)
             login_user(userlogin)
-            return 'УДАЧНО'
+            return redirect(url_for('feed'))
 
-        return 'НЕУДАЧНО'
+        flash('Ошибка авторизации')
 
     return render_template('login.html')
 
@@ -50,7 +68,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return 'Вы не авторизованы'
+    return redirect(url_for('login'))
 
 
 @app.route('/messages')
@@ -63,12 +81,30 @@ def list_messages():
 @app.route('/messages/<string:receiver_name>', methods=['GET', 'POST'])
 @login_required
 def send_message(receiver_name):
-    if request.method == 'POST':
-        content = request.form['message']
-        receiver_id = db.get_user_by_username(receiver_name)['user_id']
-        db.add_message((current_user.id, receiver_id, content))
+    # if request.method == 'POST':
+    #     content = request.form['message']
+    #     receiver_id = db.get_user_by_username(receiver_name)['user_id']
+    #     db.add_message((current_user.id, receiver_id, content))
 
     return render_template('send_message.html')
+
+
+@socketio.on('join')
+def on_join(data):
+    username = data['username']
+    room = data['room']
+    join_room(room)
+    emit('receive_message', {
+         'message': f'{username} присоединился к чату.', 'username': 'Система'}, room=room)
+
+
+@socketio.on('send_message')
+def handle_send_message(json, methods=['GET', 'POST']):
+    message = json['message']
+    room = json['room']
+    username = json['username']
+    emit('receive_message', {'message': message,
+         'username': username}, room=room)
 
 
 @app.route('/settings')
@@ -84,6 +120,7 @@ def add_post():
         user_id = current_user.id
         content = request.form['post_text']
         db.add_post((user_id, content))
+        return redirect(url_for('feed'))
 
     return render_template('add_post.html')
 
@@ -105,10 +142,10 @@ def feed():
 def user_profile(username):
     user_info = db.get_user_by_username(username)
 
-    if user_info:
-        return render_template('user_profile.html', user_info=user_info)
+    if not user_info:
+        abort(404)
 
-    return
+    return render_template('user_profile.html', user_info=user_info)
 
 
 @app.route('/buy_premium')
@@ -118,4 +155,4 @@ def buy_premium():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)
