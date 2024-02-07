@@ -1,15 +1,138 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Профиль пользователя</title>
+    <style>
+        body {
+            background-color: beige;
+            text-align: center;
+            margin: 0;
+        }
+
+        .container {
+            padding: 10px;
+            border: 10px solid rgb(45, 24, 0);
+            background-color: #7a3d1a;
+            margin: 20px auto;
+            max-width: 50%;
+            border-radius: 40px;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: white;
+        }
+
+        .name-container {
+            margin-top: 10px;
+        }
+
+        .name {
+            color: #EED8BF;
+        }
+
+        .profile-picture-container {
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid black;
+            background-color: #EED8BF;
+        }
+
+        .status-container {
+            position: relative;
+            margin: auto;
+            margin-top: 10px;
+            max-width: 800px;
+        }
+
+        .status {
+            background-color: #EED8BF;
+            padding: 10px;
+            border-radius: 20px;
+            color: #7a3d1a;
+        }
+
+        .clickable-container {
+            display: inline-block;
+            border: 5px solid #7a3d1a;
+            background-color: #EED8BF;
+            padding: 10px;
+            border-radius: 5px;
+            width: 50%;
+            color: #7a3d1a;
+        }
+
+        .buttons-container {
+            margin-top: 20px;
+            max-width: 50%;
+            margin: 20px auto;
+            border-radius: 40px;
+        }
+
+        .side-container {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background-color: #EED8BF;
+            border: 5px solid rgb(83, 45, 28);
+            width: 10%;
+            height: 100%;
+            padding: 10px;
+        }
+
+        .side-button {
+            display: block;
+            margin-bottom: 10px;
+            color: #7a3d1a;
+            text-decoration: none;
+        }
+
+        .container-post {
+            padding: 10px;
+            border: 10px solid rgb(45, 24, 0);
+            background-color: #7a3d1a;
+            margin: 20px auto;
+            max-width: 50%;
+            max-height: 100%;
+            height: 1000px;
+            border-radius: 40px;
+        }
+    </style>
 </head>
-
 <body>
-    <h1>Профиль пользователя</h1>
-    <p>Имя пользователя: {{ user_info.username }}</p>
-    <p>Email: {{ user_info.email }}</p>
-    <p>Статус: {{ user_info.status }}</p>
+    <div class="container">
+        <div class="name-container">
+            <h1 class="name">{{ user_info.username }}</h1>
+        </div>
+        <div class="profile-picture-container">
+            <img class="profile-picture" src="../static/images/kitten_night.png" alt="Profile Picture">
+        </div>
+        <div class="status-container">
+            <p class="status">{{ user_info.status }}</p>
+        </div>
+    </div>
+    <div class="bottom-container">
+        <div class="buttons-container">
+            <a href="#" class="clickable-container">Лайки</a>
+        </div>
+        <div class="buttons-container">
+            <a href="#likes" class="clickable-container">Коллекции</a>
+        </div>
+    </div>
+    <div class="side-container">
+        <a href="#" class="side-button">Мои сообщения</a>
+        <a href="#" class="side-button">Уведомления</a>
+        <a href="#" class="side-button">Мой профиль</a>
+        <a href="#" class="side-button">Настройки</a>
+    </div>
+    <div class="container-post">
+        
+    </div>
 </body>
-
 </html>

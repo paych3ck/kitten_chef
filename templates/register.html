@@ -11,7 +11,7 @@
 
     h1 {
       text-align: center;
-      color: #7a3d1a;
+      color: #EED8BF;
     }
 
     .container {
@@ -27,7 +27,7 @@
     }
 
     form {
-      padding: 50px 30px;
+      padding: 40px 30px;
     }
 
     label {
@@ -44,6 +44,7 @@
       width: 93%;
       margin: auto;
       padding: 13px;
+      font-size: 20px;
       border: none;
       border-radius: 20px;
       background: #EED8BF;
@@ -70,7 +71,7 @@
       height: 100%;
       top: 0;
       left: 0;
-      background-image: url('static/images/kitten_light.png');
+      background-image: url('../static/images/kitten_light.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -82,20 +83,20 @@
 </head>
 
 <body style="background-color: #EED8BF;">
-  <h1>Регистрация</h1>
   <div class="container">
+    <br><h1>Регистрация</h1>
     <form class="contact-form" method="post">
       <label for="loig">ЛОГИН</label>
-      <input type="text" name="name" id="name">
+      <input type="text" placeholder="Не более 10 символов" maxlength="10" name="name" id="name">
 
       <label for="email">E-MAIL</label>
       <input type="text" name="email" id="email">
 
       <label for="password">ПРИДУМАЙТЕ ПАРОЛЬ</label>
-      <input type="text" name="password" id="password">
+      <input type="password" placeholder="Не более 15 символов" maxlength="15" name="password" id="password">
 
       <label for="confirm-passwprd">ПОВТОРИТЕ ПАРОЛЬ</label>
-      <input type="text" name="confirm_password" id="confirm-password">
+      <input type="password" placeholder="Не более 15 символов" maxlength="15" name="confirm_password" id="confirm-password">
 
       <input class="submit" value="ЗАРЕГИСТРИРОВАТЬСЯ" type="submit">
     </form>
