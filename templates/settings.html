@@ -9,11 +9,11 @@
     <h1>Настройки пользователя</h1>
 
     <form method="POST" enctype="multipart/form-data" action="/settings">
-        <!-- Поле для имени пользователя (доступно только для премиум аккаунтов) -->
+        <!-- Поле для имени пользователя (доступно только для премиум аккаунтов)
         {% if current_user.is_premium %}
         <label for="username">Имя пользователя:</label>
         <input type="text" id="username" name="username" value="{{ current_user.username }}" required>
-        {% endif %}
+        {% endif %} -->
 
         <!-- Поле для адреса электронной почты -->
         <label for="email">Адрес электронной почты:</label>
