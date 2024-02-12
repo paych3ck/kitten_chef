@@ -1,25 +1,23 @@
+<!-- chats.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Список сообщений</title>
+    <meta charset="UTF-8">
+    <title>Чаты</title>
 </head>
 
 <body>
-    <h1>Список сообщений</h1>
-
     <ul>
-        {% for message in messages %}
+        {% for chat in chats %}
         <li>
-            <strong>Отправитель:</strong> {{ current_user.username }}<br>
-            <strong>Получатель:</strong> {{ message.receiver_name }}<br>
-            <strong>Дата и время:</strong> {{ message.sent_at }}<br>
-            <strong>Сообщение:</strong> {{ message.content }}
+            <span>{{ chat.chat_partner_username }}</span>
+            <span>{{ chat.last_message_text }}</span>
+            <a href="{{ url_for('send_message', chat_username=chat.chat_partner_username) }}">Перейти
+                к переписке</a>
         </li>
-        <hr>
         {% endfor %}
     </ul>
-
 </body>
 
 </html>
