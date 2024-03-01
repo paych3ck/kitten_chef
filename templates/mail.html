@@ -1,12 +1,99 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Письмо пользователю</title>
-        <link rel="stylesheet" type="text/css" href="../static/css/style_mail.css">
-    </head>
-</html>
+<head>
+    <title>Письмо пользователю</title>
+    <style>
+        body {
+            background-color: white;
+            text-align: center;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+        }
+        .container-center {
+            text-align: center; 
+            word-break: break-word; 
+            hyphens: none; 
+            border-collapse: collapse !important; 
+            vertical-align: top;  
+            color: #6c1e1e; 
+            font-family: Arial, sans-serif; 
+            font-weight: normal; 
+            font-size: 14px; 
+            margin: 0px auto; 
+            padding: 20px 0px;
+        }
+        p {
+            text-align: center; 
+            color: #6c1e1e; 
+            font-family: Arial, sans-serif; 
+            font-weight: normal; 
+            font-size: 14px; 
+            line-height: 1.3; 
+            margin: 0 0 10px; 
+            padding: 0;
+        }
+        .container-info {
+            padding: 30px 0;
+            margin: 20px auto;
+            border: 6px solid #985903;
+            border-radius: 30px;
+            vertical-align: top; 
+            text-align: left; 
+            width: 600px;
+            max-width: 100%; 
+            position: relative; 
+            background-color: #ffd1aa;  
+        }
+
+        .info {
+            word-break: break-word; 
+            vertical-align: top; 
+            text-align: center; 
+            width: 100%; 
+            color: #6c1e1e; 
+            font-family: Arial, sans-serif; 
+            font-weight: normal; 
+            font-size: 14px;  
+            margin: 0; 
+            padding: 0px;
+        }
+        .container-info a {
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 10px;
+            text-align: center;
+        }
+        .container-info img {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .premium {
+            display: block;
+            line-height: 14px; 
+            color: #ffd1aa !important; 
+            font-size: 14px !important; 
+            border-radius: 30px; 
+            -webkit-border-radius: 30px;  
+            text-decoration: none; 
+            font-weight: bold; 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            height: 100%;  
+            background-color: #985903; 
+            padding: 16px 20px;
+            margin: 0 auto;
+            margin-bottom: 10px;
+        }
+        .premium:hover{
+            background-color: #603a05;
+        }
+    </style>
+</head>
 <body>
-    <img class="container-center" src="../static/images/mail_mini.png" alt="KittenChef">
+    <div class="info"> 
+        <img class="container-center" src="https://i.imgur.com/LW8ZnEM.png" alt="KittenChef">
+    </div>
     <div class="container-info">
         <div class="info">
             <p><h1><strong> Уважаемый пользователь KittenChef, </strong></h1></p>
@@ -52,3 +139,4 @@
         </div>
     </div>
 </body> 
+</html>

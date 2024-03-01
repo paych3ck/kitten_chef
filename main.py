@@ -11,11 +11,11 @@ from flask_socketio import SocketIO, send, emit, \
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-app = Flask(__name__)
-app.config.from_object('config')
-socketio = SocketIO(app)
-login_manager = LoginManager(app)
-mail = Mail(app)
+application = Flask(__name__)
+application.config.from_object('config')
+socketio = SocketIO(application)
+login_manager = LoginManager(application)
+mail = Mail(application)
 db = DbConnection('localhost', 'KittenChef', 'postgres', 'postgres')
 
 
@@ -25,12 +25,12 @@ def load_user(user_id):
     return User(user_data)
 
 
-@app.errorhandler(404)
+@application.errorhandler(404)
 def page_not_found(error):
     return render_template('page_not_found.html'), 404
 
 
-@app.route('/')
+@application.route('/')
 def index():
     if current_user.is_authenticated:
         return redirect(url_for('feed'))
@@ -38,22 +38,22 @@ def index():
     return redirect(url_for('login'))
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@application.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['name']
         email = request.form['email']
         password_hash = generate_password_hash(request.form['password'])
         db.add_user((username, email, password_hash))
-        msg = Message('Subject', recipients=[email])
-        msg.body = 'Test text'
+        html_body = render_template('mail.html')
+        msg = Message('Добро пожаловать!', recipients=[email], html=html_body)
         mail.send(msg)
         return redirect(url_for('login'))
 
     return render_template('register.html')
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@application.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         user_data = db.get_user_by_email(request.form['email'])
@@ -69,42 +69,42 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/logout')
+@application.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
 
-@app.route('/messages')
+@application.route('/messages')
 @login_required
-def list_messages():
-    messages = db.get_messages_for_user_by_id(current_user.id)
-    return render_template('list_messages.html', chats=messages)
+def messages():
+    messages_ = db.get_messages_for_user_by_id(current_user.id)
+    return render_template('messages.html', chats=messages_)
 
 
-@app.route('/messages/<string:chat_username>', methods=['GET', 'POST'])
-@login_required
-def send_message(chat_username):
-    chat_user_info = db.get_user_by_username(chat_username)
-    chat_user_id = chat_user_info['user_id']
-    messages = db.get_messages_for_chat(current_user.id, chat_user_id)
+# @application.route('/messages/<string:chat_username>', methods=['GET', 'POST'])
+# @login_required
+# def send_message(chat_username):
+#     chat_user_info = db.get_user_by_username(chat_username)
+#     chat_user_id = chat_user_info['user_id']
+#     messages = db.get_messages_for_chat(current_user.id, chat_user_id)
 
-    if request.method == 'POST':
-        content = request.form['message']
-        receiver_id = db.get_user_by_username(chat_username)['user_id']
-        db.add_message((current_user.id, receiver_id, content))
+#     if request.method == 'POST':
+#         content = request.form['message']
+#         receiver_id = db.get_user_by_username(chat_username)['user_id']
+#         db.add_message((current_user.id, receiver_id, content))
 
-    return render_template('send_message.html', messages=messages)
+#     return render_template('send_message.html', messages=messages)
 
 
-@app.route('/settings')
+@application.route('/settings')
 @login_required
 def settings():
     return render_template('settings.html')
 
 
-@app.route('/add_post', methods=['GET', 'POST'])
+@application.route('/add_post', methods=['GET', 'POST'])
 @login_required
 def add_post():
     if request.method == 'POST':
@@ -116,20 +116,20 @@ def add_post():
     return render_template('add_post.html')
 
 
-@app.route('/post/<int:post_id>')
+@application.route('/post/<int:post_id>')
 def post(post_id):
     post_info = db.get_post_by_id(post_id)
     return render_template('post.html', post_info=post_info)
 
 
-@app.route('/feed')
+@application.route('/feed')
 @login_required
 def feed():
     posts = db.get_all_posts()
     return render_template('feed.html', posts=posts)
 
 
-@app.route('/user/<string:username>')
+@application.route('/user/<string:username>')
 def user_profile(username):
     user_info = db.get_user_by_username(username)
 
@@ -139,11 +139,11 @@ def user_profile(username):
     return render_template('user_profile.html', user_info=user_info)
 
 
-@app.route('/buy_premium')
+@application.route('/buy_premium')
 @login_required
 def buy_premium():
     return render_template('buy_premium.html')
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(application, debug=True)
