@@ -3,6 +3,7 @@ from chefuser import User
 
 from flask import Flask, request, render_template, \
     redirect, url_for, flash, abort
+from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, \
     logout_user, login_required, current_user
 from flask_socketio import SocketIO, send, emit, \
@@ -11,9 +12,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret'
+app.config.from_object('config')
 socketio = SocketIO(app)
 login_manager = LoginManager(app)
+mail = Mail(app)
 db = DbConnection('localhost', 'KittenChef', 'postgres', 'postgres')
 
 
@@ -24,7 +26,7 @@ def load_user(user_id):
 
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found(error):
     return render_template('page_not_found.html'), 404
 
 
@@ -43,6 +45,9 @@ def register():
         email = request.form['email']
         password_hash = generate_password_hash(request.form['password'])
         db.add_user((username, email, password_hash))
+        msg = Message('Subject', recipients=[email])
+        msg.body = 'Test text'
+        mail.send(msg)
         return redirect(url_for('login'))
 
     return render_template('register.html')
@@ -75,36 +80,22 @@ def logout():
 @login_required
 def list_messages():
     messages = db.get_messages_for_user_by_id(current_user.id)
-    return render_template('list_messages.html', messages=messages)
+    return render_template('list_messages.html', chats=messages)
 
 
-@app.route('/messages/<string:receiver_name>', methods=['GET', 'POST'])
+@app.route('/messages/<string:chat_username>', methods=['GET', 'POST'])
 @login_required
-def send_message(receiver_name):
-    # if request.method == 'POST':
-    #     content = request.form['message']
-    #     receiver_id = db.get_user_by_username(receiver_name)['user_id']
-    #     db.add_message((current_user.id, receiver_id, content))
+def send_message(chat_username):
+    chat_user_info = db.get_user_by_username(chat_username)
+    chat_user_id = chat_user_info['user_id']
+    messages = db.get_messages_for_chat(current_user.id, chat_user_id)
 
-    return render_template('send_message.html')
+    if request.method == 'POST':
+        content = request.form['message']
+        receiver_id = db.get_user_by_username(chat_username)['user_id']
+        db.add_message((current_user.id, receiver_id, content))
 
-
-@socketio.on('join')
-def on_join(data):
-    username = data['username']
-    room = data['room']
-    join_room(room)
-    emit('receive_message', {
-         'message': f'{username} присоединился к чату.', 'username': 'Система'}, room=room)
-
-
-@socketio.on('send_message')
-def handle_send_message(json, methods=['GET', 'POST']):
-    message = json['message']
-    room = json['room']
-    username = json['username']
-    emit('receive_message', {'message': message,
-         'username': username}, room=room)
+    return render_template('send_message.html', messages=messages)
 
 
 @app.route('/settings')

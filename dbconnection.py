@@ -63,22 +63,60 @@ class DbConnection:
         self.disconnect()
         return res
 
+    def get_messages_for_chat(self, user_id_1, user_id_2):
+        self.connect()
+        cursor = self.connection.cursor(
+            cursor_factory=psycopg2.extras.RealDictCursor)
+        query = '''SELECT m.message_id, m.sender_id, s.username AS sender_username,
+            m.receiver_id, r.username AS receiver_username, m.content, m.sent_at
+            FROM messages m
+            JOIN users s ON m.sender_id = s.user_id
+            JOIN users r ON m.receiver_id = r.user_id
+            WHERE (m.sender_id = %s AND m.receiver_id = %s)
+            OR (m.sender_id = %s AND m.receiver_id = %s)
+            ORDER BY m.sent_at
+        '''
+
+        cursor.execute(query, (user_id_1, user_id_2, user_id_2, user_id_1))
+        res = cursor.fetchall()
+        cursor.close()
+        self.disconnect()
+        return res
+
     def get_messages_for_user_by_id(self, user_id):
         self.connect()
         cursor = self.connection.cursor(
             cursor_factory=psycopg2.extras.RealDictCursor)
 
-        query = '''SELECT
-                messages.sender_id,
-                messages.receiver_id,
-                messages.content,
-                messages.sent_at,
-                users.username AS receiver_name
-                FROM messages
-                JOIN users ON messages.receiver_id = users.user_id
-                WHERE messages.sender_id = %s OR messages.receiver_id = %s'''
+        query = '''WITH LastMessages AS (
+                   SELECT
+                   m1.sender_id,
+                   m1.receiver_id,
+                   m1.content AS last_message_text,
+                   m1.sent_at AS last_message_sent_at,
+                   ROW_NUMBER() OVER (
+                   PARTITION BY
+                   CASE WHEN m1.sender_id = %s THEN m1.receiver_id ELSE m1.sender_id END
+                   ORDER BY
+                   m1.sent_at DESC
+                   ) AS rn
+                   FROM
+                   messages m1
+                   WHERE
+                   m1.sender_id = %s OR m1.receiver_id = %s
+                   )
+                   SELECT
+                   u.username AS chat_partner_username,
+                   lm.last_message_text,
+                   lm.last_message_sent_at
+                   FROM
+                   LastMessages lm
+                   JOIN
+                   users u ON u.user_id = CASE WHEN lm.sender_id = %s THEN lm.receiver_id ELSE lm.sender_id END
+                   WHERE
+                   lm.rn = 1'''
 
-        cursor.execute(query, (user_id, user_id))
+        cursor.execute(query, (user_id, user_id, user_id, user_id))
         res = cursor.fetchall()
         cursor.close()
         self.disconnect()
