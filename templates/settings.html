@@ -3,11 +3,32 @@
 
 <head>
     <title>Настройки пользователя</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/style_settings.css">
 </head>
 
 <body>
-    <h1>Настройки пользователя</h1>
+    <div class="container-settings">
+        <div class="name-container">
+            <h1>Настройки пользователя</h1>
+        </div>
+        <hr />
+        <label for="email">Адрес электронной почты:</label>
+        <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
+        <hr />
+        <label for="status">Статус:</label>
+        <input type="text" id="status" name="status" value="{{ current_user.status }}" required>
+        <hr />
+        <!-- Поле для аватара (изображения) -->
+        <label for="avatar">Аватар (изображение):</label>
+        <input type="file" id="avatar" name="avatar">
+        <hr />
+        <br>
+        <input type="submit" value="Сохранить изменения">
+    </form>
 
+    <a href="/">Вернуться на главную страницу</a>
+</body>
+    </div>
     <form method="POST" enctype="multipart/form-data" action="/settings">
         <!-- Поле для имени пользователя (доступно только для премиум аккаунтов)
         {% if current_user.is_premium %}
@@ -16,22 +37,9 @@
         {% endif %} -->
 
         <!-- Поле для адреса электронной почты -->
-        <label for="email">Адрес электронной почты:</label>
-        <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
+        
 
         <!-- Поле для статуса -->
-        <label for="status">Статус:</label>
-        <input type="text" id="status" name="status" value="{{ current_user.status }}" required>
-
-        <!-- Поле для аватара (изображения) -->
-        <label for="avatar">Аватар (изображение):</label>
-        <input type="file" id="avatar" name="avatar">
-
-        <br>
-        <input type="submit" value="Сохранить изменения">
-    </form>
-
-    <a href="/">Вернуться на главную страницу</a>
-</body>
+        
 
 </html>

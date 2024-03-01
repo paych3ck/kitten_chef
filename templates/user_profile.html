@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Профиль пользователя</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_user_profile.css') }}">
+    <link rel="stylesheet" type="text/css" href="../static/css/style_user_profile.css">
 </head>
 <body>
     <div class="container">
@@ -26,13 +26,11 @@
         <a href="#" class="side-button">Настройки</a>
         <a href="#" class="side-button">Выход</a>
     </div>
-    <div class="bottom-container">
-        <div class="buttons-container">
-            <a href="#" class="clickable-container">Лайки</a>
-        </div>
-        <div class="buttons-container">
-            <a href="#likes" class="clickable-container">Коллекции</a>
-        </div>
+    <div class="buttons-container">
+        <a href="#" class="clickable-container">Лайки</a>
+    </div>
+    <div class="buttons-container">
+        <a href="#likes" class="clickable-container">Коллекции</a>
     </div>
     <div class="container-post">
     </div>
