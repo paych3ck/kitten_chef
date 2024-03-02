@@ -16,7 +16,7 @@ application.config.from_object('config')
 socketio = SocketIO(application)
 login_manager = LoginManager(application)
 mail = Mail(application)
-db = DbConnection('localhost', 'KittenChef', 'postgres', 'postgres')
+db = DbConnection(application)
 
 
 @login_manager.user_loader

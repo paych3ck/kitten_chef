@@ -1,20 +1,18 @@
-import psycopg2
-import psycopg2.extras
-import psycopg2.sql
+import mysql.connector
 
 
 class DbConnection:
-    def __init__(self, host, database_name, user, password):
-        self.host = host
-        self.database_name = database_name
-        self.user = user
-        self.password = password
+    def __init__(self, app):
+        self.host = app.config['DB_HOST']
+        self.database_name = app.config['DB_NAME']
+        self.user = app.config['DB_USER']
+        self.password = app.config['DB_PASS']
 
     def connect(self):
-        self.connection = psycopg2.connect(host=self.host,
-                                           database=self.database_name,
-                                           user=self.user,
-                                           password=self.password)
+        self.connection = mysql.connector.connect(host=self.host,
+                                                  database=self.database_name,
+                                                  user=self.user,
+                                                  password=self.password)
 
     def disconnect(self):
         if self.connection:
@@ -52,8 +50,7 @@ class DbConnection:
 
     def get_all_posts(self):
         self.connect()
-        cursor = self.connection.cursor(
-            cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor = self.connection.cursor(dictionary=True)
         query = '''SELECT posts.*, users.username
                    FROM posts
                    INNER JOIN users ON posts.user_id = users.user_id'''
@@ -65,8 +62,7 @@ class DbConnection:
 
     def get_messages_for_chat(self, user_id_1, user_id_2):
         self.connect()
-        cursor = self.connection.cursor(
-            cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor = self.connection.cursor(dictionary=True)
         query = '''SELECT m.message_id, m.sender_id, s.username AS sender_username,
             m.receiver_id, r.username AS receiver_username, m.content, m.sent_at
             FROM messages m
@@ -85,8 +81,7 @@ class DbConnection:
 
     def get_messages_for_user_by_id(self, user_id):
         self.connect()
-        cursor = self.connection.cursor(
-            cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor = self.connection.cursor(dictionary=True)
 
         query = '''WITH LastMessages AS (
                    SELECT
@@ -124,14 +119,12 @@ class DbConnection:
 
     def __get_post_by(self, column_name, value):
         self.connect()
-        cursor = self.connection.cursor(
-            cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor = self.connection.cursor(dictionary=True)
 
-        query = psycopg2.sql.SQL('''SELECT *
+        query = '''SELECT *
                    FROM posts
-                   WHERE {pkey} = %s''').format(
-            pkey=psycopg2.sql.Identifier(column_name)
-        )
+                   WHERE `{}` = %s'''.format(column_name)
+
         cursor.execute(query, (value, ))
         res = cursor.fetchone()
         cursor.close()
@@ -143,14 +136,11 @@ class DbConnection:
 
     def __get_user_by(self, column_name, value):
         self.connect()
-        cursor = self.connection.cursor(
-            cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor = self.connection.cursor(dictionary=True)
 
-        query = psycopg2.sql.SQL('''SELECT *
+        query = '''SELECT *
                    FROM users
-                   WHERE {pkey} = %s''').format(
-            pkey=psycopg2.sql.Identifier(column_name)
-        )
+                   WHERE `{}` = %s'''.format(column_name)
 
         cursor.execute(query, (value, ))
         self.connection.commit()
