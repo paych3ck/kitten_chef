@@ -10,6 +10,11 @@ from flask_socketio import SocketIO, send, emit, \
     join_room, leave_room, send
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from yookassa import Configuration, Payment
+
+import uuid
+import secrets
+import string
 
 application = Flask(__name__)
 application.config.from_object('config')
@@ -17,6 +22,15 @@ socketio = SocketIO(application)
 login_manager = LoginManager(application)
 mail = Mail(application)
 db = DbConnection(application)
+
+# Configuration.account_id = application.config['SHOP_ID']
+# Configuration.secret_key = application.config['SHOP_SECRET_KEY']
+
+
+def generate_random_password(length=15):
+    alphabet = string.ascii_letters + string.digits + "!@#$%^&*()-_=+"
+    password = ''.join(secrets.choice(alphabet) for _ in range(length))
+    return password
 
 
 @login_manager.user_loader
@@ -27,7 +41,12 @@ def load_user(user_id):
 
 @application.errorhandler(404)
 def page_not_found(error):
-    return render_template('page_not_found.html'), 404
+    return render_template('page_not_found.html')
+
+
+@application.errorhandler(401)
+def unauthorized(error):
+    return redirect(url_for('login'))
 
 
 @application.route('/')
@@ -45,9 +64,11 @@ def register():
         email = request.form['email']
         password_hash = generate_password_hash(request.form['password'])
         db.add_user((username, email, password_hash))
-        html_body = render_template('mail.html')
+
+        html_body = render_template('welcome_mail.html', username=username)
         msg = Message('Добро пожаловать!', recipients=[email], html=html_body)
         mail.send(msg)
+
         return redirect(url_for('login'))
 
     return render_template('register.html')
@@ -64,9 +85,38 @@ def login():
             login_user(userlogin)
             return redirect(url_for('feed'))
 
-        flash('Ошибка авторизации')
+        flash('Ошибка авторизации!', category='error')
 
     return render_template('login.html')
+
+
+@application.route('/password_recovery', methods=['GET', 'POST'])
+def password_recovery():
+    if request.method == 'POST':
+        email = request.form['email']
+        user_data = db.get_user_by_email(email)
+
+        if user_data:
+            new_password = generate_random_password()
+
+            username = user_data['username']
+
+            html_body = render_template(
+                'password_recovery_mail.html', new_password=new_password,
+                username=username)
+
+            msg = Message('Восстановление пароля', recipients=[
+                          email], html=html_body)
+            mail.send(msg)
+
+            db.update_user_password(
+                email, generate_password_hash(new_password))
+
+            return redirect(url_for('login'))
+
+        flash('Пользователь с такой почтой не найден!', category='error')
+
+    return render_template('password_recovery.html')
 
 
 @application.route('/logout')
@@ -79,8 +129,8 @@ def logout():
 @application.route('/messages')
 @login_required
 def messages():
-    messages_ = db.get_messages_for_user_by_id(current_user.id)
-    return render_template('messages.html', chats=messages_)
+    # messages_ = db.get_messages_for_user_by_id(current_user.id)
+    return render_template('messages.html')  # , chats=messages_)
 
 
 # @application.route('/messages/<string:chat_username>', methods=['GET', 'POST'])
@@ -142,8 +192,20 @@ def user_profile(username):
 @application.route('/buy_premium')
 @login_required
 def buy_premium():
-    return render_template('buy_premium.html')
+    payment = Payment.create({
+        "amount": {
+            "value": "100.00",
+            "currency": "RUB"
+        },
+        "confirmation": {
+            "type": "redirect",
+            "return_url": "https://www.example.com/return_url"
+        },
+        "capture": True,
+        "description": "Заказ №1"
+    }, uuid.uuid4())
+    # return render_template('buy_premium.html')
 
 
 if __name__ == '__main__':
-    socketio.run(application, debug=True)
+    socketio.run(application, host='0.0.0.0', debug=True)

@@ -119,11 +119,11 @@ class DbConnection:
 
     def __get_post_by(self, column_name, value):
         self.connect()
-        cursor = self.connection.cursor(dictionary=True)
+        cursor = self.connection.cursor(buffered=True, dictionary=True)
 
-        query = '''SELECT *
+        query = f'''SELECT *
                    FROM posts
-                   WHERE `{}` = %s'''.format(column_name)
+                   WHERE {column_name} = %s'''
 
         cursor.execute(query, (value, ))
         res = cursor.fetchone()
@@ -136,11 +136,11 @@ class DbConnection:
 
     def __get_user_by(self, column_name, value):
         self.connect()
-        cursor = self.connection.cursor(dictionary=True)
+        cursor = self.connection.cursor(buffered=True, dictionary=True)
 
-        query = '''SELECT *
+        query = f'''SELECT *
                    FROM users
-                   WHERE `{}` = %s'''.format(column_name)
+                   WHERE {column_name} = %s'''
 
         cursor.execute(query, (value, ))
         self.connection.commit()
@@ -157,3 +157,17 @@ class DbConnection:
 
     def get_user_by_id(self, value):
         return self.__get_user_by('user_id', value)
+
+    def update_user_password(self, email, password):
+        self.connect()
+        cursor = self.connection.cursor(buffered=True, dictionary=True)
+
+        query = '''UPDATE users
+                    SET password_hash = %s
+                    WHERE email = %s'''
+
+        values = (password, email)
+        cursor.execute(query, values)
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()

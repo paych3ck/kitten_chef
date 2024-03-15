@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Лента новостей</title>
+</head>
+
+<body>
+    <h1>Лента новостей</h1>
+
+    <ul>
+        {% for post in posts %}
+        <li><a href="/user/{{ post.username }}">{{ post.username }}</a>: {{ post.content }}</li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>
