@@ -1,0 +1,25 @@
+body {
+    background-color: #EED8BF;
+    text-align: center;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 32px;
+    font-weight: bold;
+    display: flex; /* Добавляем flexbox для выравнивания */
+    justify-content: center; /* Выравниваем контент по горизонтали */
+    align-items: center; /* Выравниваем контент по вертикали */
+    height: 100vh; /* Занимаем 100% высоты окна просмотра */
+}
+
+h1 {
+    margin-top: 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 60px;
+}
+
+img {
+    display: block;
+    margin-left: 20px; /* Отступ справа от картинки */
+    width: 700px;
+    height: 700px;
+}
