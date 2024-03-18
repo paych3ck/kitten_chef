@@ -10,9 +10,9 @@ from flask_socketio import SocketIO, send, emit, \
     join_room, leave_room, send
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from yookassa import Configuration, Payment
+# from yookassa import Configuration, Payment
 
-import uuid
+# import uuid
 import secrets
 import string
 
@@ -189,22 +189,22 @@ def user_profile(username):
     return render_template('user_profile.html', user_info=user_info)
 
 
-@application.route('/buy_premium')
-@login_required
-def buy_premium():
-    payment = Payment.create({
-        "amount": {
-            "value": "100.00",
-            "currency": "RUB"
-        },
-        "confirmation": {
-            "type": "redirect",
-            "return_url": "https://www.example.com/return_url"
-        },
-        "capture": True,
-        "description": "Заказ №1"
-    }, uuid.uuid4())
-    # return render_template('buy_premium.html')
+# @application.route('/buy_premium')
+# @login_required
+# def buy_premium():
+#     payment = Payment.create({
+#         "amount": {
+#             "value": "100.00",
+#             "currency": "RUB"
+#         },
+#         "confirmation": {
+#             "type": "redirect",
+#             "return_url": "https://www.example.com/return_url"
+#         },
+#         "capture": True,
+#         "description": "Заказ №1"
+#     }, uuid.uuid4())
+#     # return render_template('buy_premium.html')
 
 
 if __name__ == '__main__':
