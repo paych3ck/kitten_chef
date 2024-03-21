@@ -148,10 +148,37 @@ def messages():
 #     return render_template('send_message.html', messages=messages)
 
 
-@application.route('/settings')
+@application.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
+    if request.method == 'POST':
+        user_id = current_user.id
+        user_username = request.form['username']
+        user_email = request.form['email']
+        user_status = request.form['status']
+        user_profile_picture = request.form['profile_picture']
+
+        if current_user.username != user_username:
+            db.update_user_username(user_id, user_username)
+
+        if current_user.email != user_email:
+            db.update_user_email(user_id, user_email)
+
+        if current_user.status != user_status:
+            db.update_user_status(user_id, user_status)
+
+        if current_user.profile_picture != user_profile_picture:
+            db.update_user_profile_picture(user_id, user_status)
+
+        return redirect(url_for('settings'))
+
     return render_template('settings.html')
+
+
+@application.route('/friends')
+@login_required
+def friends():
+    return render_template('friends.html')
 
 
 @application.route('/add_post', methods=['GET', 'POST'])

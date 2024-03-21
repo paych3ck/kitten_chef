@@ -3,7 +3,7 @@
 
 <head>
     <title>Настройки пользователя</title>
-    <link rel="stylesheet" type="text/css" href="../static/css/style_settings.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_settings.css') }}">
 </head>
 
 <body>
@@ -12,34 +12,29 @@
             <h1>Настройки пользователя</h1>
         </div>
         <hr />
-        <label for="email">Адрес электронной почты:</label>
-        <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
-        <hr />
-        <label for="status">Статус:</label>
-        <input type="text" id="status" name="status" value="{{ current_user.status }}" required>
-        <hr />
-        <!-- Поле для аватара (изображения) -->
-        <label for="avatar">Аватар (изображение):</label>
-        <input type="file" id="avatar" name="avatar">
-        <hr />
-        <br>
-        <input type="submit" value="Сохранить изменения">
-    </form>
+        <form class="update-info" method="post" action="/settings">
+            <label for="username">Имя пользователя:</label>
+            {% if current_user.is_premium %}
+            <input type="text" id="username" name="username" value="{{ current_user.username }}" required>
+            {% else %}
+            <input type="text" id="username" name="username" value="{{ current_user.username }}" required readonly>
+            {% endif %}
+            <hr />
+            <label for="email">Адрес электронной почты:</label>
+            <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
+            <hr />
+            <label for="status">Статус:</label>
+            <input type="text" id="status" name="status" value="{{ current_user.status }}" required>
+            <hr />
+            <label for="profile_picture">Аватар (изображение):</label>
+            <input type="file" id="profile_picture" name="profile_picture">
+            <hr />
+            <br>
+            <input class="submit" value="Сохранить изменения" type="submit">
+        </form>
 
-    <a href="/">Вернуться на главную страницу</a>
+        <a href="/">Вернуться на главную страницу</a>
 </body>
-    </div>
-    <form method="POST" enctype="multipart/form-data" action="/settings">
-        <!-- Поле для имени пользователя (доступно только для премиум аккаунтов)
-        {% if current_user.is_premium %}
-        <label for="username">Имя пользователя:</label>
-        <input type="text" id="username" name="username" value="{{ current_user.username }}" required>
-        {% endif %} -->
-
-        <!-- Поле для адреса электронной почты -->
-        
-
-        <!-- Поле для статуса -->
-        
+</div>
 
 </html>
