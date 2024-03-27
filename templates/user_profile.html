@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Профиль пользователя</title>
     <link rel="stylesheet" type="text/css" href="../static/css/style_header.css">
     <link rel="stylesheet" type="text/css" href="../static/css/style_user_profile.css">
 </head>
+
 <body>
     {% include 'base_header.html' %}
     <div class="container">
@@ -12,7 +14,8 @@
             <h1 class="name">{{ user_info.username }}</h1>
         </div>
         <div class="profile-picture-container">
-            <img class="profile-picture" src="../static/images/kitten_night.png" alt="Profile Picture">
+            <img class="profile-picture" src="{{ url_for('static', filename='images/kitten_night.png') }}"
+                alt="Profile Picture">
         </div>
         <div class="status-container">
             <p class="status">{{ user_info.status }}</p>
@@ -27,4 +30,5 @@
     <div class="container-post">
     </div>
 </body>
+
 </html>

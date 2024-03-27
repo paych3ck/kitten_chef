@@ -15,7 +15,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 #from yookassa import Configuration, Payment
 
-import uuid
+# import uuid
 import secrets
 import string
 
@@ -155,9 +155,30 @@ def messages():
 #     return render_template('send_message.html', messages=messages)
 
 
-@application.route('/settings')
+@application.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
+    if request.method == 'POST':
+        user_id = current_user.id
+        user_username = request.form['username']
+        user_email = request.form['email']
+        user_status = request.form['status']
+        user_profile_picture = request.form['profile_picture']
+
+        if current_user.username != user_username:
+            db.update_user_username(user_id, user_username)
+
+        if current_user.email != user_email:
+            db.update_user_email(user_id, user_email)
+
+        if current_user.status != user_status:
+            db.update_user_status(user_id, user_status)
+
+        if current_user.profile_picture != user_profile_picture:
+            db.update_user_profile_picture(user_id, user_status)
+
+        return redirect(url_for('settings'))
+
     return render_template('settings.html')
 
 # @application.route('/post/<int:post_id>')
@@ -165,16 +186,10 @@ def settings():
 #     post_info = db.get_post_by_id(post_id)
 #     return render_template('post.html', post_info=post_info)
 
-# @application.route('/add_post', methods=['GET', 'POST'])
-# @login_required
-# def add_post():
-#     if request.method == 'POST':
-#         user_id = current_user.id
-#         content = request.form['post_text']
-#         db.add_post((user_id, content))
-#         return redirect(url_for('feed'))
-
-#     return render_template('add_post.html')
+@application.route('/friends')
+@login_required
+def friends():
+    return render_template('friends.html')
 
 
 @application.route('/feed', methods=['GET', 'POST'])
@@ -206,18 +221,6 @@ def user_profile(username):
 @application.route('/premium')
 @login_required
 def premium():
-    # payment = Payment.create({
-    #     "amount": {
-    #         "value": "100.00",
-    #         "currency": "RUB"
-    #     },
-    #     "confirmation": {
-    #         "type": "redirect",
-    #         "return_url": "https://www.example.com/return_url"
-    #     },
-    #     "capture": True,
-    #     "description": "Заказ №1"
-    # }, uuid.uuid4())
     return render_template('premium.html')
 
 

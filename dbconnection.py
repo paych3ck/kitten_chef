@@ -165,11 +165,37 @@ class DbConnection:
         cursor = self.connection.cursor(buffered=True, dictionary=True)
 
         query = '''UPDATE users
-                    SET password_hash = %s
-                    WHERE email = %s'''
+                   SET password_hash = %s
+                   WHERE email = %s'''
 
         values = (password, email)
         cursor.execute(query, values)
         self.connection.commit()
         cursor.close()
         self.disconnect()
+
+    def __update_user_info_by(self, id, column_name, value):
+        self.connect()
+        cursor = self.connection.cursor(buffered=True, dictionary=True)
+
+        query = f'''UPDATE users
+                   SET {column_name} = %s
+                   WHERE user_id = %s'''
+
+        values = (value, id)
+        cursor.execute(query, values)
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+
+    def update_user_username(self, id, value):
+        return self.__update_user_info_by(id, 'username', value)
+
+    def update_user_email(self, id, value):
+        return self.__update_user_info_by(id, 'email', value)
+
+    def update_user_status(self, id, value):
+        return self.__update_user_info_by(id, 'status', value)
+
+    def update_user_profile_picture(self, id, value):
+        return self.__update_user_info_by(id, 'profile_picture', value)
