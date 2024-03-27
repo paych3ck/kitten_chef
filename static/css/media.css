@@ -15,8 +15,8 @@
 
     #page-content-wrapper {
         min-width: 100%;
-        position: absolute;
-        right: 0
+        position: fixed;
+        margin: 0 auto
     }
 
     #wrapper.toggled #page-content-wrapper {

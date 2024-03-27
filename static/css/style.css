@@ -18,29 +18,42 @@ html {
 
 body {
     height: 100%;
-    margin: 0;
+    margin: 0; 
+    /* внешний отступ на всех четырех сторонах элемента */
     padding: 0;
-    overflow-x: hidden;
+    /* внутренний отступ на всех четырех сторонах элемента */
+    overflow-x: hidden; 
+    /* содержимое, которое будет выходить за границы по горизонтали, 
+    будет скрыто и не будет видимо для пользователя.
+     При этом горизонтальная прокрутка контейнера будет отключена. */
 }
 
 .js body {
     display: none;
 }
 
-@-ms-viewport {
+/* @-ms-viewport {
     width: device-width
 }
+мб можно удалить, так как Свойство @-ms-viewport 
+было специфично для Internet Explorer и 
+Microsoft Edge на движке EdgeHTML, 
+позволяя веб-разработчикам контролировать 
+размер области просмотра на устройствах Windows. */
+
 
 a,
 a:hover {
     text-decoration: none !important;
-    color: #65666E;
+    color: #431600;
 }
+/* ссылки, когда пользователь наводит мышью на них */
 
 .btn-link:hover,
 .btn-link:focus {
     text-decoration: none !important;
 }
+/* button - btn, hover - при наведении focus - клик мышью  */
 
 .w-95 {
     width: 95% !important;
@@ -69,6 +82,7 @@ button:focus {
 .w-shadow {
     box-shadow: 5px 30px 26px -20px #b6b6b6;
 }
+/* тени элементов */
 
 /* Fonts */
 .fs-5 {
@@ -139,6 +153,8 @@ button:focus {
 .nav-settings {
     background-color: #D7DCE0;
     padding: 0.3rem;
+    /* устанавливает пространство между содержимым элемента и его границами.
+    В данном случае, отступ будет равен 0.3 раза размеру шрифта корневого элемента. */
     border-radius: 50%;
 }
 
@@ -192,7 +208,7 @@ button:focus {
 .newsfeed {
     padding: 0;
     height: 100%;
-    background-color: #F2F4F5
+    background-color: #EED8BF
 }
 
 .newsfeed-size {
@@ -297,7 +313,7 @@ button:focus {
 }
 
 .post-form {
-    background-color: #d1d3d6;
+    background-color: #ba7d5a;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px
 }
@@ -308,7 +324,7 @@ button:focus {
     border: 0;
     height: 150px;
     padding: 40px 30px;
-    background-color: #d1d3d6;
+    background-color: #ba7d5a;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px
 }
@@ -325,7 +341,7 @@ body::-webkit-scrollbar {
 .dropdown-menu.notify-drop .drop-content::-webkit-scrollbar-track,
 .message-contacts::-webkit-scrollbar-track,
 body::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #a46744;
 }
 
 /* Handle */
@@ -333,7 +349,7 @@ body::-webkit-scrollbar-track {
 .dropdown-menu.notify-drop .drop-content::-webkit-scrollbar-thumb,
 .message-contacts::-webkit-scrollbar-thumb,
 body::-webkit-scrollbar-thumb {
-    background: #888;
+    background: #a46744;
 }
 
 /* Handle on hover */
@@ -341,7 +357,7 @@ body::-webkit-scrollbar-thumb {
 .dropdown-menu.notify-drop .drop-content::-webkit-scrollbar-thumb:hover,
 .message-contacts::-webkit-scrollbar-thumb:hover,
 body::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: #a46744;
 }
 
 .post-input {
@@ -349,12 +365,12 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .post-form-btn {
-    color: #76747c;
+    color: #281204;
     font-weight: 700
 }
 
 .post-form-btn:hover {
-    color: #5d5c60;
+    color: #532f03;
     text-decoration: none
 }
 
@@ -492,7 +508,10 @@ body::-webkit-scrollbar-thumb:hover {
 
 /* Menu */
 .navbar {
-    background-color: #fff !important;
+    background-color: #a46744 !important;
+    border-bottom: 5px solid #5f2407;
+    border-top: 5px solid #5f2407;
+
 }
 
 #navbar-main {
@@ -513,13 +532,13 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 #navbar-main form .search-input {
-    border: 1px solid #ccc;
+    border: 1px solid #5f2407;
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;
 }
 
 #navbar-main form .search-button {
-    border: 1px solid #ccc;
+    border: 1px solid #351b06;
     border-top-right-radius: 30px;
     border-bottom-right-radius: 30px;
     border-left: 0;

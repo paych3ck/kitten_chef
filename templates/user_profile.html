@@ -3,10 +3,12 @@
 
 <head>
     <title>Профиль пользователя</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_user_profile.css') }}">
+    <link rel="stylesheet" type="text/css" href="../static/css/style_header.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/style_user_profile.css">
 </head>
 
 <body>
+    {% include 'base_header.html' %}
     <div class="container">
         <div class="name-container">
             <h1 class="name">{{ user_info.username }}</h1>
@@ -18,16 +20,6 @@
         <div class="status-container">
             <p class="status">{{ user_info.status }}</p>
         </div>
-    </div>
-    <div class="side-container">
-        <a href="#" class="side-button">Мои профиль</a>
-        <a href="#" class="side-button">Лента</a>
-        <a href="#" class="side-button">Сообщения</a>
-        <a href="#" class="side-button">Друзья</a>
-        <a href="#" class="side-button">Мои коллекции</a>
-        <a href="#" class="side-button">Уведомления</a>
-        <a href="#" class="side-button">Настройки</a>
-        <a href="#" class="side-button">Выход</a>
     </div>
     <div class="buttons-container">
         <a href="#" class="clickable-container">Лайки</a>

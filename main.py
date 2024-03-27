@@ -8,13 +8,20 @@ from flask_login import LoginManager, login_user, \
     logout_user, login_required, current_user
 from flask_socketio import SocketIO, send, emit, \
     join_room, leave_room, send
+from flask_wtf import FlaskForm
+from wtforms import TextAreaField, SubmitField
+from wtforms.validators import DataRequired
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# from yookassa import Configuration, Payment
+#from yookassa import Configuration, Payment
 
 # import uuid
 import secrets
 import string
+
+class NewPostForm(FlaskForm):
+    postForm = TextAreaField('О чем расскажем?', validators=[DataRequired()])
+    submit = SubmitField('Опубликовать')
 
 application = Flask(__name__)
 application.config.from_object('config')
@@ -49,7 +56,7 @@ def unauthorized(error):
     return redirect(url_for('login'))
 
 
-@application.route('/')
+@application.route('/', methods=['GET', 'POST'])
 def index():
     if current_user.is_authenticated:
         return redirect(url_for('feed'))
@@ -174,6 +181,10 @@ def settings():
 
     return render_template('settings.html')
 
+# @application.route('/post/<int:post_id>')
+# def post(post_id):
+#     post_info = db.get_post_by_id(post_id)
+#     return render_template('post.html', post_info=post_info)
 
 @application.route('/friends')
 @login_required
@@ -181,29 +192,20 @@ def friends():
     return render_template('friends.html')
 
 
-@application.route('/add_post', methods=['GET', 'POST'])
-@login_required
-def add_post():
-    if request.method == 'POST':
-        user_id = current_user.id
-        content = request.form['post_text']
-        db.add_post((user_id, content))
-        return redirect(url_for('feed'))
-
-    return render_template('add_post.html')
-
-
-@application.route('/post/<int:post_id>')
-def post(post_id):
-    post_info = db.get_post_by_id(post_id)
-    return render_template('post.html', post_info=post_info)
-
-
-@application.route('/feed')
+@application.route('/feed', methods=['GET', 'POST'])
 @login_required
 def feed():
     posts = db.get_all_posts()
-    return render_template('feed.html', posts=posts)
+    new_post_form = NewPostForm()
+
+    print(posts)
+    if new_post_form.validate_on_submit():
+        user_id = current_user.id
+        content = new_post_form.postForm.data
+        db.add_post((user_id, content))
+        return redirect(url_for('feed'))
+    
+    return render_template('feed.html', posts=posts, new_post_form=new_post_form)
 
 
 @application.route('/user/<string:username>')
@@ -216,22 +218,10 @@ def user_profile(username):
     return render_template('user_profile.html', user_info=user_info)
 
 
-# @application.route('/buy_premium')
-# @login_required
-# def buy_premium():
-#     payment = Payment.create({
-#         "amount": {
-#             "value": "100.00",
-#             "currency": "RUB"
-#         },
-#         "confirmation": {
-#             "type": "redirect",
-#             "return_url": "https://www.example.com/return_url"
-#         },
-#         "capture": True,
-#         "description": "Заказ №1"
-#     }, uuid.uuid4())
-#     # return render_template('buy_premium.html')
+@application.route('/premium')
+@login_required
+def premium():
+    return render_template('premium.html')
 
 
 if __name__ == '__main__':
