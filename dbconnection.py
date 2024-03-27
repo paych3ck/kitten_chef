@@ -52,8 +52,10 @@ class DbConnection:
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
         query = '''SELECT posts.*, users.username
-                   FROM posts
-                   INNER JOIN users ON posts.user_id = users.user_id'''
+                    FROM posts
+                    INNER JOIN users ON posts.user_id = users.user_id
+                    ORDER BY posts.created_at DESC;
+                    '''
         cursor.execute(query)
         res = cursor.fetchall()
         cursor.close()
