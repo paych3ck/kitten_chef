@@ -51,7 +51,7 @@ class DbConnection:
     def get_all_posts(self):
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
-        query = '''SELECT posts.*, users.username
+        query = '''SELECT posts.*, users.username, users.profile_picture
                     FROM posts
                     INNER JOIN users ON posts.user_id = users.user_id
                     ORDER BY posts.created_at DESC;
@@ -199,3 +199,92 @@ class DbConnection:
 
     def update_user_profile_picture(self, id, value):
         return self.__update_user_info_by(id, 'profile_picture', value)
+
+    def send_friend_request(self, user_id, friend_id):
+        self.connect()
+        cursor = self.connection.cursor(buffered=True, dictionary=True)
+
+        query = """
+            INSERT INTO user_friends (user_id, friend_id, status)
+            VALUES (%s, %s, 'pending')
+            ON DUPLICATE KEY UPDATE status = 'pending';
+            """
+        cursor.execute(query, (user_id, friend_id))
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+
+    def confirm_friend_request(self, user_id, friend_id):
+        self.connect()
+        cursor = self.connection.cursor(buffered=True, dictionary=True)
+        confirm_query = """
+            UPDATE user_friends SET status = 'accepted'
+            WHERE user_id = %s AND friend_id = %s;
+            """
+        cursor.execute(confirm_query, (user_id, friend_id))
+
+        reciprocal_query = """
+            INSERT INTO user_friends (user_id, friend_id, status)
+            VALUES (%s, %s, 'accepted')
+            ON DUPLICATE KEY UPDATE status = 'accepted';
+            """
+        cursor.execute(reciprocal_query, (friend_id, user_id))
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+
+    def delete_friend(self, user_id, friend_id):
+        self.connect()
+        cursor = self.connection.cursor()
+        query = """
+                DELETE FROM user_friends
+                WHERE (user_id = %s AND friend_id = %s)
+                OR (user_id = %s AND friend_id = %s);
+                """
+        cursor.execute(query, (user_id, friend_id, friend_id, user_id))
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+
+    def check_friendship_status(self, user_id, friend_id):
+        self.connect()
+        cursor = self.connection.cursor(buffered=True, dictionary=True)
+        query = """
+            SELECT status FROM user_friends
+            WHERE (user_id = %s AND friend_id = %s)
+            OR (user_id = %s AND friend_id = %s);
+        """
+        cursor.execute(query, (user_id, friend_id, friend_id, user_id))
+        result = cursor.fetchone()
+        return 'not_friends' if result is None else result['status']
+
+    def check_pending_invites(self, user_id):
+        self.connect()
+        cursor = self.connection.cursor(dictionary=True)
+        query = """
+                SELECT users.user_id, users.username, users.profile_picture
+                FROM user_friends
+                JOIN users ON user_friends.user_id = users.user_id
+                WHERE user_friends.friend_id = %s AND user_friends.status = 'pending';
+                """
+        cursor.execute(query, (user_id,))
+        pending_invites = cursor.fetchall()
+        cursor.close()
+        self.disconnect()
+        return pending_invites
+
+    def get_all_friends(self, user_id):
+        self.connect()
+        cursor = self.connection.cursor(dictionary=True)
+        query = """
+                    SELECT users.user_id, users.username, users.profile_picture
+                    FROM user_friends
+                    JOIN users ON (user_friends.friend_id = users.user_id OR user_friends.user_id = users.user_id)
+                    WHERE (user_friends.user_id = %s OR user_friends.friend_id = %s) AND user_friends.status = 'accepted'
+                    AND users.user_id != %s;
+                    """
+        cursor.execute(query, (user_id, user_id, user_id))
+        friends = cursor.fetchall()
+        cursor.close()
+        self.disconnect()
+        return friends

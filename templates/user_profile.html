@@ -2,9 +2,10 @@
 <html>
 
 <head>
-    <title>Профиль пользователя</title>
-    <link rel="stylesheet" type="text/css" href="../static/css/style_header.css">
-    <link rel="stylesheet" type="text/css" href="../static/css/style_user_profile.css">
+    <title>KittenChef - {{ user_info.username }}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_header.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_user_profile.css') }}">
 </head>
 
 <body>
@@ -14,12 +15,22 @@
             <h1 class="name">{{ user_info.username }}</h1>
         </div>
         <div class="profile-picture-container">
-            <img class="profile-picture" src="{{ url_for('static', filename='images/kitten_night.png') }}"
+            <img class="profile-picture"
+                src="{{ url_for('uploaded_file', filename='avatars/' + user_info.profile_picture) }}"
                 alt="Profile Picture">
         </div>
         <div class="status-container">
             <p class="status">{{ user_info.status }}</p>
         </div>
+
+        {% if current_user.username != user_info.username %}
+        <form method="post">
+            {{ add_friend_form.hidden_tag() }}
+            <div class="buttons-container">
+                {{ add_friend_form.submit(class_='clickable-container') }}
+            </div>
+        </form>
+        {% endif %}
     </div>
     <div class="buttons-container">
         <a href="#" class="clickable-container">Лайки</a>

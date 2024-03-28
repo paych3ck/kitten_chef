@@ -1,30 +1,25 @@
+import os
+
+from user import User
+from miscs import convert_datetime, generate_random_password
 from dbconnection import DbConnection
-from chefuser import User
+from forms import AddFriendForm, NewPostForm, UserSettingsForm
 
 from flask import Flask, request, render_template, \
-    redirect, url_for, flash, abort
+    redirect, send_from_directory, url_for, flash, abort
 from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, \
     logout_user, login_required, current_user
 from flask_socketio import SocketIO, send, emit, \
     join_room, leave_room, send
-from flask_wtf import FlaskForm
-from wtforms import TextAreaField, SubmitField
-from wtforms.validators import DataRequired
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
-#from yookassa import Configuration, Payment
-
-# import uuid
-import secrets
-import string
-
-class NewPostForm(FlaskForm):
-    postForm = TextAreaField('О чем расскажем?', validators=[DataRequired()])
-    submit = SubmitField('Опубликовать')
+# from yookassa import Configuration, Payment
 
 application = Flask(__name__)
 application.config.from_object('config')
+application.jinja_env.globals.update(convert_datetime=convert_datetime)
 socketio = SocketIO(application)
 login_manager = LoginManager(application)
 mail = Mail(application)
@@ -32,12 +27,6 @@ db = DbConnection(application)
 
 # Configuration.account_id = application.config['SHOP_ID']
 # Configuration.secret_key = application.config['SHOP_SECRET_KEY']
-
-
-def generate_random_password(length=15):
-    alphabet = string.ascii_letters + string.digits + "!@#$%^&*()-_=+"
-    password = ''.join(secrets.choice(alphabet) for _ in range(length))
-    return password
 
 
 @login_manager.user_loader
@@ -133,6 +122,11 @@ def logout():
     return redirect(url_for('login'))
 
 
+@application.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    return send_from_directory(application.config['UPLOAD_FOLDER'], filename)
+
+
 @application.route('/messages')
 @login_required
 def messages():
@@ -158,12 +152,14 @@ def messages():
 @application.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
-    if request.method == 'POST':
+    user_settings_form = UserSettingsForm()
+
+    if user_settings_form.validate_on_submit():
         user_id = current_user.id
-        user_username = request.form['username']
-        user_email = request.form['email']
-        user_status = request.form['status']
-        user_profile_picture = request.form['profile_picture']
+        user_username = user_settings_form.username.data
+        user_email = user_settings_form.email.data
+        user_status = user_settings_form.status.data
+        user_profile_picture = user_settings_form.profile_picture.data
 
         if current_user.username != user_username:
             db.update_user_username(user_id, user_username)
@@ -174,22 +170,48 @@ def settings():
         if current_user.status != user_status:
             db.update_user_status(user_id, user_status)
 
-        if current_user.profile_picture != user_profile_picture:
-            db.update_user_profile_picture(user_id, user_status)
+        if user_profile_picture:
+            filename = secure_filename(user_profile_picture.filename)
+            avatar_path = os.path.join('uploads/avatars/', str(user_id))
+            os.makedirs(avatar_path, exist_ok=True)
+            user_profile_picture.save(os.path.join(avatar_path, filename))
+            db.update_user_profile_picture(user_id, f'{user_id}/{filename}')
 
         return redirect(url_for('settings'))
 
-    return render_template('settings.html')
+    return render_template('settings.html',
+                           user_settings_form=user_settings_form)
 
 # @application.route('/post/<int:post_id>')
 # def post(post_id):
 #     post_info = db.get_post_by_id(post_id)
 #     return render_template('post.html', post_info=post_info)
 
-@application.route('/friends')
+
+@application.route('/friends', methods=['GET', 'POST'])
 @login_required
 def friends():
-    return render_template('friends.html')
+    pending_invites = db.check_pending_invites(current_user.id)
+    friends = db.get_all_friends(current_user.id)
+    print(friends)
+
+    if request.method == 'POST':
+        user_id = current_user.id
+        action = request.form['action']
+        friend_id = request.form.get(
+            'invite_id') or request.form.get('friend_id')
+
+        if action == 'accept':
+            invite_id = request.form['invite_id']
+            db.confirm_friend_request(user_id, invite_id)
+
+        elif action in ['reject', 'delete']:
+            db.delete_friend(user_id, friend_id)
+
+        return redirect(url_for('friends'))
+
+    return render_template('friends.html',
+                           pending_invites=pending_invites, friends=friends)
 
 
 @application.route('/feed', methods=['GET', 'POST'])
@@ -199,23 +221,47 @@ def feed():
     new_post_form = NewPostForm()
 
     print(posts)
+
     if new_post_form.validate_on_submit():
         user_id = current_user.id
         content = new_post_form.postForm.data
         db.add_post((user_id, content))
         return redirect(url_for('feed'))
-    
-    return render_template('feed.html', posts=posts, new_post_form=new_post_form)
+
+    return render_template('feed.html', posts=posts,
+                           new_post_form=new_post_form)
 
 
-@application.route('/user/<string:username>')
+@application.route('/user/<string:username>', methods=['GET', 'POST'])
 def user_profile(username):
+    add_friend_form = AddFriendForm()
     user_info = db.get_user_by_username(username)
 
     if not user_info:
         abort(404)
 
-    return render_template('user_profile.html', user_info=user_info)
+    user_id = current_user.id
+    friend_id = user_info['user_id']
+    friendship_status = db.check_friendship_status(user_id, friend_id)
+
+    if friendship_status == 'pending':
+        add_friend_form.submit.label.text = 'Отменить заявку'
+
+    if friendship_status == 'accepted':
+        add_friend_form.submit.label.text = 'Удалить из друзей'
+
+    if add_friend_form.validate_on_submit():
+        if friendship_status == 'not_friends':
+            db.send_friend_request(user_id, friend_id)
+
+        if friendship_status in ['pending', 'accepted']:
+            db.delete_friend(user_id, friend_id)
+
+        return redirect(url_for('user_profile', username=username))
+
+    return render_template('user_profile.html', user_info=user_info,
+                           add_friend_form=add_friend_form,
+                           friendship_status=friendship_status)
 
 
 @application.route('/premium')
