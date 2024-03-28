@@ -2,39 +2,41 @@
 <html>
 
 <head>
-    <title>Настройки пользователя</title>
+    <title>KittenChef - настройки пользователя</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_settings.css') }}">
+    <link href="{{ url_for('static', filename='css/style_header.css') }}" rel="stylesheet">
 </head>
 
 <body>
+    {% include 'base_header.html' %}
     <div class="container-settings">
         <div class="name-container">
             <h1>Настройки пользователя</h1>
         </div>
         <hr />
-        <form class="update-info" method="post" action="/settings">
-            <label for="username">Имя пользователя:</label>
+        <form class="update-info" enctype="multipart/form-data" method="post" action="/settings">
+            {{ user_settings_form.hidden_tag() }}
+            {{ user_settings_form.username.label }}
             {% if current_user.is_premium %}
             <input type="text" id="username" name="username" value="{{ current_user.username }}" required>
             {% else %}
             <input type="text" id="username" name="username" value="{{ current_user.username }}" required readonly>
             {% endif %}
             <hr />
-            <label for="email">Адрес электронной почты:</label>
+            {{ user_settings_form.email.label }}
             <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
             <hr />
-            <label for="status">Статус:</label>
+            {{ user_settings_form.status.label }}
             <input type="text" id="status" name="status" value="{{ current_user.status }}" required>
             <hr />
-            <label for="profile_picture">Аватар (изображение):</label>
+            {{ user_settings_form.profile_picture.label }}
             <input type="file" id="profile_picture" name="profile_picture">
             <hr />
             <br>
-            <input class="submit" value="Сохранить изменения" type="submit">
+            {{ user_settings_form.submit() }}
         </form>
-
-        <a href="/">Вернуться на главную страницу</a>
+    </div>
 </body>
-</div>
 
 </html>

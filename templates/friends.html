@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{ url_for('static', filename='css/style_header.css') }}" rel="stylesheet">
+    <title>Список друзей</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .friend-list,
+        .request-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .friend,
+        .request {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .info {
+            flex-grow: 1;
+        }
+
+        .info h4,
+        .info p {
+            margin: 0;
+        }
+
+        .actions {
+            display: flex;
+        }
+
+        .actions button {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'base_header.html' %}
+    <h2>Ожидающие заявки</h2>
+    <ul class="request-list">
+        {% for invite in pending_invites %}
+        <li class="request">
+            <form action="/friends" method="post">
+                <img src="{{ url_for('uploaded_file', filename='avatars/' + invite.profile_picture) }}" alt="Аватар"
+                    class="avatar">
+                <div class="info">
+                    <h4>{{ invite.username }}</h4>
+                    <p>Заявка в друзья</p>
+                </div>
+                <div class="actions">
+                    <input type="hidden" name="invite_id" value="{{ invite.user_id }}">
+                    <button type="submit" name="action" value="accept">Принять</button>
+                    <button type="submit" name="action" value="reject">Отклонить</button>
+                </div>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Друзья</h2>
+    <ul class="friend-list">
+        {% for friend in friends %}
+        <li class="friend">
+            <form action="/friends" method="post">
+                <img src="{{ url_for('uploaded_file', filename='avatars/' + friend.profile_picture) }}" alt="Аватар"
+                    class="avatar">
+                <div class="info">
+                    <h4>{{ friend.username }}</h4>
+                    <p>Друг</p>
+                </div>
+                <div class="actions">
+                    <input type="hidden" name="friend_id" value="{{ friend.user_id }}">
+                    <button type="submit" name="action" value="send_message">Написать сообщение</button>
+                    <button type="submit" name="action" value="delete">Удалить из друзей</button>
+                </div>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+
+</body>
+
+</html>

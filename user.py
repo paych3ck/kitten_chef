@@ -31,7 +31,7 @@ class User(UserMixin):
 
     @property
     def is_premium(self):
-        return str(self.__user['is_premium'])
+        return int(self.__user['is_premium'])
 
     def is_active(self):
         return True
