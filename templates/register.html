@@ -2,33 +2,32 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
-  <title>Регистрация</title>
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}" />
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_register_login.css') }}">
+    <title>KittenChef - регистрация</title>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_register_login.css') }}">
 </head>
 
 <body style="background-color: #EED8BF;">
-  <div class="container">
+    <div class="container">
     <br>
     <h1>Регистрация</h1>
-    <form class="contact-form" method="post">
-      <label for="loig">ЛОГИН</label>
-      <input type="text" placeholder="Не более 10 символов" maxlength="10" name="name" id="name">
+        <form class="contact-form" method="post">
+            <label for="loig">ЛОГИН</label>
+            <input type="text" placeholder="Не более 10 символов" maxlength="10" name="name" id="name">
 
-      <label for="email">E-MAIL</label>
-      <input type="text" name="email" id="email">
+            <label for="email">E-MAIL</label>
+            <input type="text" name="email" id="email">
 
-      <label for="password">ПРИДУМАЙТЕ ПАРОЛЬ</label>
-      <input type="password" placeholder="Не более 15 символов" maxlength="15" name="password" id="password">
+            <label for="password">ПРИДУМАЙТЕ ПАРОЛЬ</label>
+            <input type="password" placeholder="Не более 15 символов" maxlength="15" name="password" id="password">
 
-      <label for="confirm-passwprd">ПОВТОРИТЕ ПАРОЛЬ</label>
-      <input type="password" placeholder="Не более 15 символов" maxlength="15" name="confirm_password"
-        id="confirm-password">
+            <label for="confirm-passwprd">ПОВТОРИТЕ ПАРОЛЬ</label>
+            <input type="password" placeholder="Не более 15 символов" maxlength="15" name="confirm_password" id="confirm-password">
 
-      <input class="submit" value="ЗАРЕГИСТРИРОВАТЬСЯ" type="submit">
-    </form>
-  </div>
+            <input class="submit" value="ЗАРЕГИСТРИРОВАТЬСЯ" type="submit">
+        </form>
+    </div>
 </body>
 
 </html>

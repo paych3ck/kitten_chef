@@ -2,36 +2,37 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
-  <title>Авторизация</title>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_register_login.css') }}">
+    <title>KittenChef - авторизация</title>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_register_login.css') }}">
 </head>
 
 <body>
-  {% for cat, msg in get_flashed_messages(True) %}
-  <div class="flash {{cat}}">
-    <h1>{{msg}}</h1>
-  </div>
-  {% endfor %}
-  <div class="container">
-    <br>
-    <h1>Авторизация</h1>
-    <form class="contact-form" method="post">
-      <label for="email">E-MAIL</label>
-      <input type="text" name='email' id="email">
+    {% for cat, msg in get_flashed_messages(True) %}
+        <div class="flash {{cat}}">
+            <h1>{{msg}}</h1>
+        </div>
+    {% endfor %}
 
-      <label for="password">ПАРОЛЬ</label>
-      <input type="password" maxlength="15" name='password' id="password">
+    <div class="container">
+        <br>
+        <h1>Авторизация</h1>
+        <form class="contact-form" method="post">
+            <label for="email">E-MAIL</label>
+            <input type="text" name='email' id="email">
 
-      <input class="submit" value="ВХОД В АККАУНТ" type="submit">
+            <label for="password">ПАРОЛЬ</label>
+            <input type="password" maxlength="15" name='password' id="password">
 
-      <input class="submit" onclick="location.href='{{ url_for('register') }}'" value="РЕГИСТРАЦИЯ" type="button"
-        href="{{ url_for('register') }}">
+            <input class="submit" value="ВХОД В АККАУНТ" type="submit">
 
-      <a href="{{ url_for('password_recovery')}}">ВОССТАНОВЛЕНИЕ ПАРОЛЯ</a>
+            <input class="submit" onclick="location.href='{{ url_for('register') }}'" value="РЕГИСТРАЦИЯ" type="button" href="{{ url_for('register') }}">
 
-    </form>
-  </div>
+            <a href="{{ url_for('password_recovery')}}">ВОССТАНОВЛЕНИЕ ПАРОЛЯ</a>
+
+        </form>
+    </div>
 </body>
 
 </html>

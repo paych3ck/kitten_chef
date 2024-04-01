@@ -14886,8 +14886,8 @@ var widgetsSlider = $.widget( "ui.slider", $.ui.mouse, {
 		switch ( key ) {
 			case "orientation":
 				this._detectOrientation();
-				this._removeClass( "ui-slider-horizontal ui-slider-vertical" )
-					._addClass( "ui-slider-" + this.orientation );
+				 this._removeClass( "ui-slider-horizontal ui-slider-vertical" )
+				._addClass( "ui-slider-" + this.orientation );
 				this._refreshValue();
 				if ( this.options.range ) {
 					this._refreshRange( value );

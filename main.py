@@ -193,7 +193,6 @@ def settings():
 def friends():
     pending_invites = db.check_pending_invites(current_user.id)
     friends = db.get_all_friends(current_user.id)
-    print(friends)
 
     if request.method == 'POST':
         user_id = current_user.id
@@ -219,8 +218,6 @@ def friends():
 def feed():
     posts = db.get_all_posts()
     new_post_form = NewPostForm()
-
-    print(posts)
 
     if new_post_form.validate_on_submit():
         user_id = current_user.id

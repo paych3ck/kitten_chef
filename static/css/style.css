@@ -23,6 +23,7 @@ body {
     padding: 0;
     /* внутренний отступ на всех четырех сторонах элемента */
     overflow-x: hidden; 
+    line-height: 1.15;
     /* содержимое, которое будет выходить за границы по горизонтали, 
     будет скрыто и не будет видимо для пользователя.
      При этом горизонтальная прокрутка контейнера будет отключена. */
@@ -305,7 +306,7 @@ button:focus {
 .postFormHeader {
     background-color: #e9ebee;
     padding: 8px 20px;
-    border: 1px solid #ccc
+    border: 1px solid #961414
 }
 
 .postFormHeader p {
@@ -329,12 +330,12 @@ button:focus {
     border-top-right-radius: 10px
 }
 
-#postForm::-webkit-scrollbar,
+/* #postForm::-webkit-scrollbar,
 .dropdown-menu.notify-drop .drop-content::-webkit-scrollbar,
 .message-contacts::-webkit-scrollbar,
 body::-webkit-scrollbar {
     width: 10px;
-}
+} */
 
 /* Track */
 #postForm::-webkit-scrollbar-track,
