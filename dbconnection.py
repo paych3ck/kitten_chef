@@ -262,7 +262,7 @@ class DbConnection:
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
         query = """
-                SELECT users.user_id, users.username, users.profile_picture
+                SELECT users.user_id, users.username, users.profile_picture, users.status
                 FROM user_friends
                 JOIN users ON user_friends.user_id = users.user_id
                 WHERE user_friends.friend_id = %s AND user_friends.status = 'pending';
@@ -277,7 +277,7 @@ class DbConnection:
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
         query = """
-                    SELECT users.user_id, users.username, users.profile_picture
+                    SELECT users.user_id, users.username, users.profile_picture, users.status
                     FROM user_friends
                     JOIN users ON (user_friends.friend_id = users.user_id OR user_friends.user_id = users.user_id)
                     WHERE (user_friends.user_id = %s OR user_friends.friend_id = %s) AND user_friends.status = 'accepted'

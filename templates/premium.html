@@ -1,19 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Премиум</title>
-    <link rel="stylesheet" type="text/css" href="../static/css/style_header.css">
-    <link rel="stylesheet" type="text/css" href="../static/css/style_premium.css">
+    <title>KittenChef - премиум</title>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_header.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_premium.css') }}">
 </head>
 <body>
     {% include 'base_header.html' %}
     <div class="container">
+        <div class="header-container">
+           <h1>
+            Станьте Премиум-пользователем KittenChef!
+           </h1> 
+        </div>  
+        <div class="header-container">
+            <h2>
+                Премиум-подписка открывает новые горизонты для вашего кулинарного творчества и общения в мире гастрономов. Поднимите свой опыт в KittenChef на невиданный уровень!
+            </h2>
+        </div>
         <div class="info-container">
-           <p>
-            Эй, юный кулинар! Доставай кошелек и покупай премиум!
-           </p> 
-        </div>   
+            <ul>
+                <li>
+                    <b>Выразите свою индивидуальность:</b> ваш ник — это больше, чем просто имя. Это отражение вашего кулинарного духа, ваших предпочтений и стиля. С премиум-подпиской, вы можете менять его по желанию, подчёркивая свою уникальность.
+                </li>
+                <li>
+                    <b>Больше места для коллекций рецептов:</b> в то время как обычные пользователи ограничены двумя альбомами, VIP-пользователи могут создавать неограниченное количество альбомов для своих коллекций.
+                </li>
+                <li>
+                    <b>Видеорецепты:</b> возможность загружать и просматривать видеорецепты.
+                </li>
+                <li>
+                    <b>Приоритетная поддержка:</b> VIP-пользователи получают приоритет при обращении в службу поддержки.
+                </li>
+                <li>
+                    <b>Эксклюзивность и приватность:</b> публикуйте контент, который будет виден только выбранной аудитории. Это ваш шанс поделиться особыми рецептами или экспериментами на кухне, которые предназначены для самых преданных поклонников и единомышленников.
+                </li>
+            </ul> 
+        </div>
+        <div class="header-container">
+            <h2>
+                Подписка на Премиум – это не просто дополнительные функции. Это ваш шаг к расширению кулинарных горизонтов, общению с единомышленниками и погружению в мир кулинарии без ограничений.
+                Приглашаем вас присоединиться к премиальному сообществу KittenChef уже сегодня!
+            </h2>
+        </div>
     </div>
-    <input class="submit" value="КУПИТЬ ПРЕМИУМ" type="button">
+    <!-- <div class="button-container">
+        <input class="submit" value="КУПИТЬ ПРЕМИУМ" type="button">
+    </div> -->
+    <div class="buttons-container">
+        <div class="buybutton-container">
+            <div class="text">
+                <b>12 месяцев</b>
+            <br>
+            </div>
+            <div class="text">
+                Скидка 50%
+                <br>
+            </div>
+            <div class="text">
+                <s>1260</s> &nbsp 960
+            </div>
+            <div class="button-container">
+                <input class="submit" value="КУПИТЬ ПРЕМИУМ 12 МЕС." type="button">
+            </div>
+        </div>
+        <div class="buybutton-container">
+            <div class="text">
+                <b>12 месяцев</b>
+            <br>
+            </div>
+            <div class="text">
+                Скидка 50%
+                <br>
+            </div>
+            <div class="text">
+                <s>1260</s> &nbsp 960
+            </div>
+            <div class="button-container">
+                <input class="submit" value="КУПИТЬ ПРЕМИУМ 12 МЕС." type="button">
+            </div>
+        </div>
+        <div class="buybutton-container">
+            <div class="text">
+                <b>12 месяцев</b>
+            <br>
+            </div>
+            <div class="text">
+                Скидка 50%
+                <br>
+            </div>
+            <div class="text">
+                <s>1260</s> &nbsp 960
+            </div>
+            <div class="button-container">
+                <input class="submit" value="КУПИТЬ ПРЕМИУМ 12 МЕС." type="button">
+            </div>
+        </div>
+    </div>
 </body>
 </html>

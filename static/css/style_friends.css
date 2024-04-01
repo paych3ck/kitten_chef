@@ -1,0 +1,105 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #EED8BF;
+}
+
+.friend-list,
+.request-list {
+    list-style: none;
+    padding: 0;
+}
+
+.friend,
+.request {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 5px solid rgb(87, 48, 16);
+    background-color: #e6af90;
+    margin: 20px auto;
+    max-width: 60%;
+    border-radius: 40px;
+    margin-top: 48px;
+}
+
+.avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.info {
+    flex-grow: 1;
+}
+.name-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+h2 {
+    display: flex;
+    margin: 0 auto;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 32px;
+}
+h1{
+    display: flex;
+    margin: 0 auto;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 45px;
+    text-align: center;
+    font-weight: bold;
+}
+.info h4,
+.info p {
+    margin: 0;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Выравниваем кнопки по правому краю */
+    justify-content: space-between; /* Распределяем кнопки вертикально */
+    height: 100%; /* Высота соответствует высоте .user-info */
+    margin-left: 15px; /* Добавляем отступ слева от блока кнопок */
+}
+
+.actions button {
+    padding: 5px;
+    width: 100%;
+    margin: 4px 0; /* Добавляем небольшой отступ между кнопками */
+    margin-right: 10px;
+    background-color: #cb8b66;
+    border-radius: 40px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 16px;
+    font-weight: bold;
+    float: right;
+    border: 3px solid rgb(87, 48, 16);
+}
+button:hover {
+    background-color: #bb6e42;
+}
+
+.container {
+    padding: 10px;
+    background-color: #a46744;
+    margin: 20px auto;
+    max-width: 50%;
+    border-radius: 40px;
+    margin-top: 58px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Заставляет блок информации занимать всё доступное пространство */
+}
+img {
+    display: block;
+    margin-left: 30%; /* Отступ справа от картинки */
+    width: 800px;
+    height: 800px;
+}
