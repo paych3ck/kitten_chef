@@ -4,28 +4,35 @@
 <head>
     <title>KittenChef - регистрация</title>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}"/>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_register_login.css') }}">
 </head>
 
 <body style="background-color: #EED8BF;">
+    {% for cat, msg in get_flashed_messages(True) %}
+    <div class="flash {{cat}}">
+        <h1>{{msg}}</h1>
+    </div>
+    {% endfor %}
     <div class="container">
-    <br>
-    <h1>Регистрация</h1>
+        <br>
+        <h1>Регистрация</h1>
         <form class="contact-form" method="post">
-            <label for="loig">ЛОГИН</label>
-            <input type="text" placeholder="Не более 10 символов" maxlength="10" name="name" id="name">
+            {{ register_form.csrf_token }}
 
-            <label for="email">E-MAIL</label>
-            <input type="text" name="email" id="email">
+            {{ register_form.username.label }}
+            {{ register_form.username() }}
 
-            <label for="password">ПРИДУМАЙТЕ ПАРОЛЬ</label>
-            <input type="password" placeholder="Не более 15 символов" maxlength="15" name="password" id="password">
+            {{ register_form.email.label }}
+            {{ register_form.email() }}
 
-            <label for="confirm-passwprd">ПОВТОРИТЕ ПАРОЛЬ</label>
-            <input type="password" placeholder="Не более 15 символов" maxlength="15" name="confirm_password" id="confirm-password">
+            {{ register_form.password.label }}
+            {{ register_form.password() }}
 
-            <input class="submit" value="ЗАРЕГИСТРИРОВАТЬСЯ" type="submit">
+            {{ register_form.confirm_password.label }}
+            {{ register_form.confirm_password() }}
+
+            {{ register_form.submit(class_='submit')}}
         </form>
     </div>
 </body>

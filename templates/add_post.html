@@ -1,15 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Добавление поста</title>
+    <!-- Подключите необходимые стили -->
+</head>
 
 <body>
 
-    <h2>Написать пост</h2>
+    <h1>Добавление поста</h1>
 
-    <form method="post">
-        <label for="post_text">Текст поста:</label><br>
-        <input type="text" id="post_text" name="post_text"><br>
+    <form method="POST" enctype="multipart/form-data">
+        {{ add_post_form.hidden_tag() }}
 
-        <input type="submit" value="Submit">
+        <div>
+            {{ add_post_form.content.label }} <br>
+            {{ add_post_form.content(rows=5, cols=40) }} <br>
+            {% for error in add_post_form.content.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ add_post_form.images.label }} <br>
+            {{ add_post_form.images(multiple=True) }} <br>
+            {% for error in add_post_form.images.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ add_post_form.submit() }}
+        </div>
     </form>
 
 </body>

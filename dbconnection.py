@@ -18,12 +18,45 @@ class DbConnection:
         if self.connection:
             self.connection.close()
 
-    def add_post(self, data):
+    def add_note(self, user_id, type):
         self.connect()
         cursor = self.connection.cursor()
-        query = '''INSERT INTO posts(user_id, content)
-                   VALUES(%s, %s)'''
-        cursor.execute(query, data)
+
+        query = '''
+        INSERT INTO notes(user_id, type)
+        VALUES(%s, %s)
+        '''
+
+        cursor.execute(query, (user_id, type))
+        note_id = cursor.lastrowid
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+        return note_id
+
+    def add_post_detail(self, note_id, content):
+        self.connect()
+        cursor = self.connection.cursor()
+
+        query = '''
+        INSERT INTO posts(note_id, content)
+        VALUES (%s, %s)'''
+
+        cursor.execute(query, (note_id, content))
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+
+    def add_recipe_detail(self, note_id, recipe_name, ingredients, steps):
+        self.connect()
+        cursor = self.connection.cursor()
+
+        query = '''
+        INSERT INTO recipes(note_id, recipe_name, ingredients, steps)
+        VALUES(%s, %s, %s, %s)
+        '''
+
+        cursor.execute(query, (note_id, recipe_name, ingredients, steps))
         self.connection.commit()
         cursor.close()
         self.disconnect()
@@ -31,8 +64,12 @@ class DbConnection:
     def add_message(self, data):
         self.connect()
         cursor = self.connection.cursor()
-        query = '''INSERT INTO messages(sender_id, receiver_id, content)
-                   VALUES(%s, %s, %s)'''
+
+        query = '''
+        INSERT INTO messages(sender_id, receiver_id, content, sent_at)
+        VALUES(%s, %s, %s, %s)
+        '''
+
         cursor.execute(query, data)
         self.connection.commit()
         cursor.close()
@@ -41,23 +78,64 @@ class DbConnection:
     def add_user(self, data):
         self.connect()
         cursor = self.connection.cursor()
-        query = '''INSERT INTO users(username, email, password_hash)
-                   VALUES(%s, %s, %s)'''
+
+        query = '''
+        INSERT INTO users(username, email, password_hash)
+        VALUES(%s, %s, %s)
+        '''
+
         cursor.execute(query, data)
         self.connection.commit()
         cursor.close()
         self.disconnect()
 
-    def get_all_posts(self):
+    def get_all_notes(self):
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
-        query = '''SELECT posts.*, users.username, users.profile_picture
-                    FROM posts
-                    INNER JOIN users ON posts.user_id = users.user_id
-                    ORDER BY posts.created_at DESC;
-                    '''
+
+        query = '''
+        SELECT notes.*, users.username, users.profile_picture
+        FROM notes
+        INNER JOIN users ON notes.user_id = users.user_id
+        ORDER BY notes.created_at DESC;
+        '''
+
         cursor.execute(query)
         res = cursor.fetchall()
+        cursor.close()
+        self.disconnect()
+        return res
+
+    def get_post_info(self, id):
+        self.connect()
+        cursor = self.connection.cursor(dictionary=True)
+
+        query = '''
+        SELECT posts.content
+        FROM notes
+        LEFT JOIN posts ON notes.note_id = posts.note_id 
+        WHERE notes.type = 'post' AND notes.note_id = %s
+        '''
+
+        cursor.execute(query, (id, ))
+        res = cursor.fetchone()
+        cursor.close()
+        self.disconnect()
+        return res
+
+    def get_recipe_info(self, id):
+        self.connect()
+        cursor = self.connection.cursor(dictionary=True)
+
+        query = '''
+        SELECT recipes.recipe_name, recipes.ingredients, recipes.steps
+        FROM notes
+        LEFT JOIN recipes ON notes.note_id = recipes.note_id
+        WHERE notes.type = 'recipe' AND notes.note_id = %s
+        '''
+
+        cursor.execute(query, (id, ))
+        res = cursor.fetchone()
         cursor.close()
         self.disconnect()
         return res
@@ -65,14 +143,15 @@ class DbConnection:
     def get_messages_for_chat(self, user_id_1, user_id_2):
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
-        query = '''SELECT m.message_id, m.sender_id, s.username AS sender_username,
-            m.receiver_id, r.username AS receiver_username, m.content, m.sent_at
-            FROM messages m
-            JOIN users s ON m.sender_id = s.user_id
-            JOIN users r ON m.receiver_id = r.user_id
-            WHERE (m.sender_id = %s AND m.receiver_id = %s)
-            OR (m.sender_id = %s AND m.receiver_id = %s)
-            ORDER BY m.sent_at
+        query = '''
+        SELECT m.message_id, m.sender_id, s.username AS sender_username, s.profile_picture AS sender_avatar,
+        m.receiver_id, r.username AS receiver_username, r.profile_picture AS receiver_avatar, m.content, m.sent_at
+        FROM messages m
+        JOIN users s ON m.sender_id = s.user_id
+        JOIN users r ON m.receiver_id = r.user_id
+        WHERE (m.sender_id = %s AND m.receiver_id = %s)
+        OR (m.sender_id = %s AND m.receiver_id = %s)
+        ORDER BY m.sent_at
         '''
 
         cursor.execute(query, (user_id_1, user_id_2, user_id_2, user_id_1))
@@ -81,39 +160,35 @@ class DbConnection:
         self.disconnect()
         return res
 
-    def get_messages_for_user_by_id(self, user_id):
+    def get_chats_for_user_by_id(self, user_id):
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
 
-        query = '''WITH LastMessages AS (
-                   SELECT
-                   m1.sender_id,
-                   m1.receiver_id,
-                   m1.content AS last_message_text,
-                   m1.sent_at AS last_message_sent_at,
-                   ROW_NUMBER() OVER (
-                   PARTITION BY
-                   CASE WHEN m1.sender_id = %s THEN m1.receiver_id ELSE m1.sender_id END
-                   ORDER BY
-                   m1.sent_at DESC
-                   ) AS rn
-                   FROM
-                   messages m1
-                   WHERE
-                   m1.sender_id = %s OR m1.receiver_id = %s
-                   )
-                   SELECT
-                   u.username AS chat_partner_username,
-                   lm.last_message_text,
-                   lm.last_message_sent_at
-                   FROM
-                   LastMessages lm
-                   JOIN
-                   users u ON u.user_id = CASE WHEN lm.sender_id = %s THEN lm.receiver_id ELSE lm.sender_id END
-                   WHERE
-                   lm.rn = 1'''
+        query = '''
+        SELECT u.username AS chat_partner_username,
+        m1.content AS last_message_text,
+        m1.sent_at AS last_message_sent_at
+        FROM messages m1
+        INNER JOIN users u ON u.user_id = CASE 
+        WHEN m1.sender_id = %s THEN m1.receiver_id 
+        ELSE m1.sender_id 
+        END
+        WHERE (m1.sender_id = %s OR m1.receiver_id = %s) AND m1.sent_at = (
+        SELECT MAX(m2.sent_at)
+        FROM messages m2
+        WHERE 
+        (m2.sender_id = m1.sender_id AND m2.receiver_id = m1.receiver_id)
+        OR (m2.sender_id = m1.receiver_id AND m2.receiver_id = m1.sender_id)
+        )
+        GROUP BY 
+        chat_partner_username, 
+        last_message_text, 
+        last_message_sent_at
+        ORDER BY 
+        last_message_sent_at DESC;
+        '''
 
-        cursor.execute(query, (user_id, user_id, user_id, user_id))
+        cursor.execute(query, (user_id, user_id, user_id))
         res = cursor.fetchall()
         cursor.close()
         self.disconnect()
@@ -123,9 +198,11 @@ class DbConnection:
         self.connect()
         cursor = self.connection.cursor(buffered=True, dictionary=True)
 
-        query = f'''SELECT *
-                   FROM posts
-                   WHERE {column_name} = %s'''
+        query = f'''
+        SELECT *
+        FROM posts
+        WHERE {column_name} = %s
+        '''
 
         cursor.execute(query, (value, ))
         res = cursor.fetchone()
@@ -140,9 +217,11 @@ class DbConnection:
         self.connect()
         cursor = self.connection.cursor(buffered=True, dictionary=True)
 
-        query = f'''SELECT *
-                   FROM users
-                   WHERE {column_name} = %s'''
+        query = f'''
+        SELECT *
+        FROM users
+        WHERE {column_name} = %s
+        '''
 
         cursor.execute(query, (value, ))
         self.connection.commit()
@@ -164,9 +243,11 @@ class DbConnection:
         self.connect()
         cursor = self.connection.cursor(buffered=True, dictionary=True)
 
-        query = '''UPDATE users
-                   SET password_hash = %s
-                   WHERE email = %s'''
+        query = '''
+        UPDATE users
+        SET password_hash = %s
+        WHERE email = %s
+        '''
 
         values = (password, email)
         cursor.execute(query, values)
@@ -178,9 +259,11 @@ class DbConnection:
         self.connect()
         cursor = self.connection.cursor(buffered=True, dictionary=True)
 
-        query = f'''UPDATE users
-                   SET {column_name} = %s
-                   WHERE user_id = %s'''
+        query = f'''
+        UPDATE users
+        SET {column_name} = %s
+        WHERE user_id = %s
+        '''
 
         values = (value, id)
         cursor.execute(query, values)
@@ -204,11 +287,12 @@ class DbConnection:
         self.connect()
         cursor = self.connection.cursor(buffered=True, dictionary=True)
 
-        query = """
-            INSERT INTO user_friends (user_id, friend_id, status)
-            VALUES (%s, %s, 'pending')
-            ON DUPLICATE KEY UPDATE status = 'pending';
-            """
+        query = '''
+        INSERT INTO user_friends (user_id, friend_id, status)
+        VALUES (%s, %s, 'pending')
+        ON DUPLICATE KEY UPDATE status = 'pending';
+        '''
+
         cursor.execute(query, (user_id, friend_id))
         self.connection.commit()
         cursor.close()
@@ -217,10 +301,12 @@ class DbConnection:
     def confirm_friend_request(self, user_id, friend_id):
         self.connect()
         cursor = self.connection.cursor(buffered=True, dictionary=True)
-        confirm_query = """
-            UPDATE user_friends SET status = 'accepted'
-            WHERE user_id = %s AND friend_id = %s;
-            """
+
+        confirm_query = '''
+        UPDATE user_friends SET status = 'accepted'
+        WHERE user_id = %s AND friend_id = %s;
+        '''
+
         cursor.execute(confirm_query, (user_id, friend_id))
 
         reciprocal_query = """

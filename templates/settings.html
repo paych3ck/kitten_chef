@@ -16,7 +16,7 @@
         </div>
         <hr />
         <form class="update-info" enctype="multipart/form-data" method="post" action="/settings">
-            {{ user_settings_form.hidden_tag() }}
+            {{ user_settings_form.csrf_token }}
             {{ user_settings_form.username.label }}
             {% if current_user.is_premium %}
             <input type="text" id="username" name="username" value="{{ current_user.username }}" required>
@@ -34,7 +34,7 @@
             <input type="file" id="profile_picture" name="profile_picture">
             <hr />
             <br>
-            {{ user_settings_form.submit(class_='button-action') }} 
+            {{ user_settings_form.submit(class_='button-action') }}
         </form>
     </div>
 </body>
