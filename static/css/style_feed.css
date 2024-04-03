@@ -1,0 +1,55 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FFD54F;
+    margin: 0;
+    padding: 20px;
+}
+
+.buttons {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.post-button,
+.recipe-button {
+    background-color: #FFA000;
+    /* Оранжевый цвет кнопок */
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.post {
+    background-color: #FFCA28;
+    /* Более светлый оранжевый цвет постов */
+    border: 1px solid #FFB300;
+    /* Граница постов */
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.avatar {
+    width: 50px;
+    /* Установите желаемую ширину */
+    height: 50px;
+    /* Установите желаемую высоту */
+    border-radius: 50%;
+    /* Делает изображение круглым */
+    object-fit: cover;
+    /* Обеспечивает покрытие области изображения без искажения */
+}
+
+
+.meta-info {
+    display: block;
+    /* Или flex для более сложного выравнивания */
+    color: #6D4C41;
+    /* Цвет текста информации о посте */
+}
+
+.content {
+    color: #6D4C41;
+    /* Цвет текста поста */
+}

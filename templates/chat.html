@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>KittenChef - сообщения с {{ chat_username }}</title>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_chat.css') }}">
+</head>
+
+<body>
+    <h1>Сообщения</h1>
+    <div id="chat-wrap">
+        <div id="chat"></div>
+        <div id="enter-message">
+            <textarea name="message" id="message" rows="3"></textarea>
+            <button id="add-message-btn">Add message</button>
+        </div>
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        const socket = io()
+
+        const chatWrap = document.querySelector('#chat-wrap')
+        const chat = document.querySelector('#chat')
+        const textareaMessage = document.querySelector('textarea#message')
+        const addMessageBtn = document.querySelector('#add-message-btn')
+        const senderId = '{{ current_user.id }}';
+        const receiverId = '{{ chat_user_id }}';
+        const sender_username = '{{ current_user.username }}'
+        const senderIdNum = parseInt(senderId, 10);
+        const receiverIdNum = parseInt(receiverId, 10);
+        const maxId = Math.max(senderIdNum, receiverIdNum);
+        const minId = Math.min(senderIdNum, receiverIdNum);
+        const room = `${maxId}r${minId}`;
+        socket.emit('join', { chat_user_id: receiverId, room: room })
+
+        addMessageBtn.addEventListener('click', () => {
+            console.log('Add message btn is clicked')
+            console.log('User typed:', textareaMessage.value)
+
+            socket.emit('message', {
+                content: textareaMessage.value, receiver_id: receiverId, room: room,
+                sender_username: sender_username
+            })
+            textareaMessage.value = ''
+        })
+
+        const newMessage = data => {
+            const newMsg = document.createElement('div')
+            newMsg.classList.add('msg')
+
+            newMsg.innerHTML = `<div><small>${data.sent_at}</small></div> ${data.sender_username}: ${data.content}`
+
+            chat.append(newMsg)
+        }
+
+        window.addEventListener('beforeunload', function (event) {
+            socket.emit('leave', {
+                room: room
+            });
+        });
+
+
+        socket.on('message', data => {
+            console.log(data)
+            newMessage(data)
+        })
+
+        socket.on('previous_messages', data => {
+            console.log(data)
+            chat.innerHTML = ''
+
+            data.forEach(el => {
+                newMessage(el)
+            })
+        })
+
+    </script>
+
+</body>
+
+</html>

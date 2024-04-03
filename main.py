@@ -1,17 +1,19 @@
 import os
 
 from user import User
-from miscs import convert_datetime, generate_random_password
+from miscs import convert_datetime_in_feed, convert_datetime_in_chat, \
+    generate_random_password, current_time
 from dbconnection import DbConnection
-from forms import AddFriendForm, NewPostForm, UserSettingsForm
+from forms import AddFriendForm, NewPostForm, \
+    UserSettingsForm, RegisterForm, LoginForm, PasswordRecoveryForm
 
 from flask import Flask, request, render_template, \
     redirect, send_from_directory, url_for, flash, abort
 from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, \
     logout_user, login_required, current_user
-from flask_socketio import SocketIO, send, emit, \
-    join_room, leave_room, send
+from flask_socketio import SocketIO, emit, \
+    join_room, leave_room
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -19,7 +21,10 @@ from werkzeug.utils import secure_filename
 
 application = Flask(__name__)
 application.config.from_object('config')
-application.jinja_env.globals.update(convert_datetime=convert_datetime)
+application.jinja_env.globals.update(
+    convert_datetime_in_feed=convert_datetime_in_feed,
+    convert_datetime_in_chat=convert_datetime_in_chat
+)
 socketio = SocketIO(application)
 login_manager = LoginManager(application)
 mail = Mail(application)
@@ -55,10 +60,16 @@ def index():
 
 @application.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        username = request.form['name']
-        email = request.form['email']
-        password_hash = generate_password_hash(request.form['password'])
+    register_form = RegisterForm()
+
+    if register_form.validate_on_submit():
+        if register_form.password.data != register_form.confirm_password.data:
+            flash('Пароли не совпадают!', category='error')
+            return redirect(url_for('register'))
+
+        username = register_form.username.data
+        email = register_form.email.data
+        password_hash = generate_password_hash(register_form.password.data)
         db.add_user((username, email, password_hash))
 
         html_body = render_template('welcome_mail.html', username=username)
@@ -67,29 +78,33 @@ def register():
 
         return redirect(url_for('login'))
 
-    return render_template('register.html')
+    return render_template('register.html', register_form=register_form)
 
 
 @application.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        user_data = db.get_user_by_email(request.form['email'])
+    login_form = LoginForm()
+
+    if login_form.validate_on_submit():
+        user_data = db.get_user_by_email(login_form.email.data)
 
         if user_data and check_password_hash(user_data['password_hash'],
-                                             request.form['password']):
+                                             login_form.password.data):
             userlogin = User(user_data)
             login_user(userlogin)
             return redirect(url_for('feed'))
 
         flash('Ошибка авторизации!', category='error')
 
-    return render_template('login.html')
+    return render_template('login.html', login_form=login_form)
 
 
 @application.route('/password_recovery', methods=['GET', 'POST'])
 def password_recovery():
-    if request.method == 'POST':
-        email = request.form['email']
+    password_recovery_form = PasswordRecoveryForm()
+
+    if password_recovery_form.validate_on_submit():
+        email = password_recovery_form.email.data
         user_data = db.get_user_by_email(email)
 
         if user_data:
@@ -112,7 +127,8 @@ def password_recovery():
 
         flash('Пользователь с такой почтой не найден!', category='error')
 
-    return render_template('password_recovery.html')
+    return render_template('password_recovery.html',
+                           password_recovery_form=password_recovery_form)
 
 
 @application.route('/logout')
@@ -127,26 +143,50 @@ def uploaded_file(filename):
     return send_from_directory(application.config['UPLOAD_FOLDER'], filename)
 
 
+@socketio.on('leave')
+def handle_leave(data):
+    room = data['room']
+    leave_room(room)
+
+
+@socketio.on('join')
+def handle_enter_chat(data):
+    room = data['room']
+    chat_user_id = data['chat_user_id']
+    join_room(room)
+    messages = db.get_messages_for_chat(current_user.id, chat_user_id)
+
+    for message in messages:
+        message['sent_at'] = convert_datetime_in_chat(message['sent_at'])
+
+    emit('previous_messages', messages)
+
+
+@socketio.on('message')
+def handle_send_message(data):
+    sender_id = current_user.id
+    receiver_id = data['receiver_id']
+    content = data['content']
+    sent_at = current_time()
+    db.add_message((sender_id, receiver_id, content, sent_at))
+    data['sent_at'] = convert_datetime_in_chat(sent_at)
+    emit('message', {**data}, room=data['room'])
+
+
 @application.route('/messages')
 @login_required
 def messages():
-    # messages_ = db.get_messages_for_user_by_id(current_user.id)
-    return render_template('messages.html')  # , chats=messages_)
+    chats = db.get_chats_for_user_by_id(current_user.id)
+    return render_template('messages.html', chats=chats)
 
 
-# @application.route('/messages/<string:chat_username>', methods=['GET', 'POST'])
-# @login_required
-# def send_message(chat_username):
-#     chat_user_info = db.get_user_by_username(chat_username)
-#     chat_user_id = chat_user_info['user_id']
-#     messages = db.get_messages_for_chat(current_user.id, chat_user_id)
-
-#     if request.method == 'POST':
-#         content = request.form['message']
-#         receiver_id = db.get_user_by_username(chat_username)['user_id']
-#         db.add_message((current_user.id, receiver_id, content))
-
-#     return render_template('send_message.html', messages=messages)
+@application.route('/messages/<string:chat_username>', methods=['GET', 'POST'])
+@login_required
+def chat(chat_username):
+    chat_user_info = db.get_user_by_username(chat_username)
+    chat_user_id = chat_user_info['user_id']
+    return render_template('chat.html', chat_username=chat_username,
+                           chat_user_id=chat_user_id)
 
 
 @application.route('/settings', methods=['GET', 'POST'])
@@ -206,6 +246,10 @@ def friends():
 
         elif action in ['reject', 'delete']:
             db.delete_friend(user_id, friend_id)
+
+        elif action == 'send_message':
+            chat_username = db.get_user_by_id(friend_id)['username']
+            return redirect(url_for('chat', chat_username=chat_username))
 
         return redirect(url_for('friends'))
 
