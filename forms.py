@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import EmailField, \
     StringField, TextAreaField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, Email, Length
@@ -32,9 +32,12 @@ class AddFriendForm(FlaskForm):
     submit = SubmitField('Добавить в друзья')
 
 
-class NewPostForm(FlaskForm):
-    postForm = TextAreaField('О чем расскажем?', validators=[DataRequired()])
-    submit = SubmitField('Опубликовать')
+class AddPostForm(FlaskForm):
+    content = StringField('Текст поста', validators=[DataRequired()])
+    images = FileField('Выберите изображения (не обязательно)', validators=[
+        FileAllowed(['jpg', 'png'], 'Только изображения!')
+    ])
+    submit = SubmitField('Добавить пост')
 
 
 class UserSettingsForm(FlaskForm):

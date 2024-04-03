@@ -5,25 +5,47 @@
     <meta charset="UTF-8">
     <title>KittenChef - лента новостей</title>
     <link href="{{ url_for('static', filename='css/style_header.css') }}" rel="stylesheet">
-    <style>
-    </style>
+    <link href="{{ url_for('static', filename='css/style_feed.css') }}" rel="stylesheet">
 </head>
 
 <body>
     {% include 'base_header.html' %}
     <div class="buttons">
-        <button class="post-button">НОВЫЙ ПОСТ</button>
-        <button class="recipe-button">НОВЫЙ РЕЦЕПТ</button>
+        <a href="add_post">
+            <button class="post-button">НОВЫЙ ПОСТ</button>
+        </a>
+        <a href="add_recipe">
+            <button class="recipe-button">НОВЫЙ РЕЦЕПТ</button>
+        </a>
     </div>
 
     <div class="news-feed">
-        {% for post in posts %}
+        {% for note in notes %}
         <div class="post">
-            <img src="{{ url_for('uploaded_file', filename='avatars/' + post.profile_picture) }}" alt="Аватар автора"
+            <img src="{{ url_for('uploaded_file', filename='avatars/' + note.profile_picture) }}" alt="Аватар автора"
                 class="avatar">
-            <a href="/user/{{ post.username }}" class="meta-info">{{ post.username }}</a>
-            <span class="meta-info">{{ convert_datetime_in_feed(post.created_at) }}</span>
-            <p class="content">{{ post.content }}</p>
+            <a href="/user/{{ note.username }}" class="meta-info">{{ note.username }}</a>
+            <span class="meta-info">{{ convert_datetime_in_feed(note.created_at) }}</span>
+            {% if note.type == 'post' %}
+            <p class="content">{{ note.content }}</p>
+            {% elif note.type == 'recipe' %}
+            <p class="content"> {{ note.recipe_name }}</p>
+            <h2>Ингредиенты</h1>
+                <ul>
+                    {% for ingredient in note.ingredients %}
+                    <li>{{ ingredient.name }} - {{ ingredient.amount }}</li>
+                    {% endfor %}
+                </ul>
+
+                <h2>Шаги приготовления</h2>
+                <ul>
+                    {% for step in note.steps %}
+                    <h3>{{ step.title }}</h3>
+                    <li>{{ step.duration }} - {{ step.description }}</li>
+                    {% endfor %}
+                </ul>
+
+                {% endif %}
         </div>
         {% endfor %}
     </div>
