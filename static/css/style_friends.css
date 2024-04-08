@@ -86,10 +86,12 @@ button:hover {
 .container {
     padding: 10px;
     background-color: #a46744;
+    border: 10px solid rgb(107, 59, 21);
+    border-radius: 50%;
     margin: 20px auto;
     max-width: 50%;
     border-radius: 40px;
-    margin-top: 58px;
+    margin-top: 48px;
 }
 
 .user-info {
