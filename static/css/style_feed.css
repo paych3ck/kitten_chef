@@ -1,33 +1,40 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #FFD54F;
+    background-color: #EED8BF;
     margin: 0;
-    padding: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .buttons {
     text-align: center;
     margin-bottom: 20px;
+    margin-top: 52px;
 }
 
 .post-button,
 .recipe-button {
-    background-color: #FFA000;
-    /* Оранжевый цвет кнопок */
-    border: none;
+    border: 5px solid #a46744;
+    background-color: #e6b998;
+    color: #58331d;
+    border-radius: 20px;
     padding: 10px 20px;
     margin: 0 5px;
+    margin-bottom: 0px;
     font-size: 16px;
     cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .post {
-    background-color: #FFCA28;
-    /* Более светлый оранжевый цвет постов */
-    border: 1px solid #FFB300;
-    /* Граница постов */
+    border: 10px solid rgb(107, 59, 21);
+    background-color: #a46744;
     margin-bottom: 10px;
     padding: 10px;
+    margin: 20px auto;
+    max-width: 60%;
+    border-radius: 40px;
 }
 
 .avatar {
@@ -40,16 +47,21 @@ body {
     object-fit: cover;
     /* Обеспечивает покрытие области изображения без искажения */
 }
-
-
+a {
+    text-decoration: none;
+}
+a:hover{
+    color: #c7a681;
+}
 .meta-info {
     display: block;
     /* Или flex для более сложного выравнивания */
-    color: #6D4C41;
+    color: #fff5ea;
+    font-size: 20px;
     /* Цвет текста информации о посте */
 }
 
 .content {
-    color: #6D4C41;
+    color: #EED8BF;
     /* Цвет текста поста */
 }

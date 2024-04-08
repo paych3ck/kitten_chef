@@ -5,17 +5,42 @@
     <meta charset="UTF-8">
     <title>Добавление поста</title>
     <!-- Подключите необходимые стили -->
+    <link href="{{ url_for('static', filename='css/style_header.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style_add_recipe.css') }}" rel="stylesheet">
 </head>
 
 <body>
-
-    <h1>Добавление поста</h1>
-
+    {% include 'base_header.html' %}
+    <div class="name-container">
+        <h1>Добавление поста</h1>
+    </div>
+    <div class="container">
+        <div class="header-container">
+            <h2>
+                Обычные посты — ваше пространство для выражения мыслей, обмена опытом посещения кафе и ресторанов, а также для обсуждения всего, что касается мира кулинарии и гастрономии.
+            </h2>
+        </div>
+        <div class="info-container">
+            <ul>
+                <li>
+                    <b>Выразите свое мнение:</b> Не бойтесь делиться личным взглядом на кулинарные тренды, ингредиенты или книги по кулинарии. Ваш уникальный опыт ценен для сообщества.
+                </li>
+                <li>
+                    <b>Делитесь опытом:</b> Расскажите о недавнем посещении кафе или ресторана. Что вам понравилось, а что нет? Ваши советы могут помочь другим сделать выбор.
+                </li>
+                <li>
+                    <b>Используйте фотографии:</b> Качественные изображения могут сделать ваш пост намного привлекательнее. Фотографии блюд, интерьера заведений или даже селфи могут добавить живости вашим рассказам.
+                </li>
+            </ul> 
+        </div>
+    </div>
     <form method="POST" enctype="multipart/form-data">
         {{ add_post_form.hidden_tag() }}
 
         <div>
-            {{ add_post_form.content.label }} <br>
+            <div class="text-container">
+                <h1>{{ add_post_form.content.label }} </h1> <br>
+            </div>
             {{ add_post_form.content(rows=5, cols=40) }} <br>
             {% for error in add_post_form.content.errors %}
             <span style="color: red;">[{{ error }}]</span>
