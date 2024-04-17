@@ -32,11 +32,15 @@ a:hover {
 }
 
 .recipe-headers {
-    color: green
+    color: #eed8bf
+}
+
+.recipe-text {
+    color: #eed8bf
 }
 
 .recipe-name {
-    color: blueviolet
+    color: #eed8bf
 }
 
 .post-content {
@@ -103,4 +107,50 @@ hr {
 
 .comment-username {
     flex-grow: 1;
+}
+
+.favorite-button {
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.favorite-button img {
+    width: 24px;
+    height: 24px;
+}
+
+.like-button {
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.like-button img {
+    width: 24px;
+    height: 24px;
+}
+
+.toggle-comments-btn {
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.toggle-comments-btn img {
+    width: 24px;
+    height: 24px;
+    transition: all 0.3s ease;
+    /* Плавное изменение */
+}
+
+.toggle-comments-btn:hover img {
+    content: url('../../static/images/comments_hover.svg');
+}
+
+.stat {
+    color: #EED8BF
 }

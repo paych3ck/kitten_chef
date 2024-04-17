@@ -315,6 +315,7 @@ class DbConnection:
 
         query = '''
         SELECT u.username AS chat_partner_username,
+        u.profile_picture AS chat_partner_avatar,
         m1.content AS last_message_text,
         m1.sent_at AS last_message_sent_at
         FROM messages m1

@@ -4,6 +4,7 @@ document.querySelectorAll('.favorite-button').forEach(button => {
         const isFavorited = this.dataset.favorited === 'true';
         const favoriteCountSpan = document.getElementById('favorite-count-' + noteId);
         let currentFavorites = parseInt(favoriteCountSpan.textContent);
+        const img = this.querySelector('img');
 
         fetch('/favorite', {
             method: 'POST',
@@ -18,11 +19,11 @@ document.querySelectorAll('.favorite-button').forEach(button => {
             .then(data => {
                 if (data.status === 'favorite added') {
                     this.dataset.favorited = 'true';
-                    this.textContent = 'Unfavorite';
+                    img.src = 'static/images/favorite_hover.svg'; // Обновляем изображение на "в избранном"
                     favoriteCountSpan.textContent = currentFavorites + 1;
                 } else if (data.status === 'favorite removed') {
                     this.dataset.favorited = 'false';
-                    this.textContent = 'Favorite';
+                    img.src = 'static/images/favorite_idle.svg'; // Обновляем изображение на "не в избранном"
                     favoriteCountSpan.textContent = currentFavorites - 1;
                 }
             });
@@ -35,6 +36,7 @@ document.querySelectorAll('.like-button').forEach(button => {
         const isLiked = this.dataset.liked === 'true';
         const likeCountSpan = document.getElementById('like-count-' + noteId);
         let currentLikes = parseInt(likeCountSpan.textContent);
+        const img = this.querySelector('img');
 
         fetch('/like', {
             method: 'POST',
@@ -49,11 +51,11 @@ document.querySelectorAll('.like-button').forEach(button => {
             .then(data => {
                 if (data.status === 'like added') {
                     this.dataset.liked = 'true';
-                    this.textContent = 'Unlike';
+                    img.src = 'static/images/like_hover.svg'
                     likeCountSpan.textContent = currentLikes + 1;
                 } else if (data.status === 'like removed') {
                     this.dataset.liked = 'false';
-                    this.textContent = 'Like';
+                    img.src = 'static/images/like_idle.svg'
                     likeCountSpan.textContent = currentLikes - 1;
                 }
             });

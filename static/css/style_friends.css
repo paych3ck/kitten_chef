@@ -47,13 +47,17 @@ h2 {
     font-size: 32px;
 }
 
-h1 {
-    display: flex;
+.headers {
+    /* display: flex;
     margin: 0 auto;
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-size: 45px;
     text-align: center;
-    font-weight: bold;
+    font-weight: bold; */
+
+    color: var(--header-color);
+    font-family: var(--header-font);
+    font-size: 32px;
 }
 
 .info h4,

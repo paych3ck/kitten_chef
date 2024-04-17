@@ -33,7 +33,7 @@ class AddFriendForm(FlaskForm):
 
 
 class AddPostForm(FlaskForm):
-    content = StringField('Текст поста', validators=[DataRequired()])
+    content = TextAreaField('Текст поста', validators=[DataRequired()])
     images = FileField('Выберите изображения (не обязательно)', validators=[
         FileAllowed(['jpg', 'png'], 'Только изображения!')
     ])

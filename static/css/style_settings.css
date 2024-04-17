@@ -1,7 +1,7 @@
 body {
     background-color: var(--main-bg-color);
     margin: 0;
-    font-family: var(--main-font);
+    font-family: var(--main-text-font);
     font-size: 16px;
     font-weight: bold;
 }
@@ -32,7 +32,7 @@ hr {
 }
 
 .container-settings {
-    background-color: var(--container-bg-color);
+    background-color: var(--main-container-bg-color);
     margin: 20px auto;
     max-width: 50%;
     max-height: 100%;
@@ -70,8 +70,8 @@ input {
 .button-action {
     width: 50%;
     padding: 20px;
-    background-color: var(--button-active-bg-color);
-    font-family: var(--font-secondary);
+    background-color: #cb8b66;
+    font-family: var(--main-text-font);
     font-size: 28px;
     font-weight: bold;
     border: 3px solid var(--main-bg-color);
@@ -80,6 +80,6 @@ input {
 }
 
 .button-action:hover {
-    background-color: var(--button-hover-bg-color);
+    background-color: #5f3821;
     color: var(--main-bg-color);
 }

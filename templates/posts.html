@@ -10,14 +10,14 @@
         {% elif note.type == 'recipe' %}
         <h1 class="recipe-name"> {{ note.recipe_name }}</h1>
         <h2 class="recipe-headers">Ингредиенты</h2>
-        <ul>
+        <ul class="recipe-text">
             {% for ingredient in note.ingredients %}
             <li>{{ ingredient.name }} - {{ ingredient.amount }}</li>
             {% endfor %}
         </ul>
 
         <h2 class="recipe-headers">Шаги приготовления</h2>
-        <ul>
+        <ul class="recipe-text">
             {% for step in note.steps %}
             <h3>{{ step.title }}</h3>
             <li>{{ step.duration }} - {{ step.description }}</li>
@@ -25,19 +25,25 @@
         </ul>
         {% endif %}
 
-        <button class="toggle-comments-btn" data-note-id="{{ note.note_id }}">Показать комментарии</button>
-
         <button class="like-button" data-note-id="{{ note.note_id }}"
             data-liked="{{ 'true' if note.is_liked else 'false' }}">
-            {{ 'Unlike' if note.is_liked else 'Like' }}
+            <img
+                src="{{ url_for('static', filename='images/' + ('like_hover.svg' if note.is_liked else 'like_idle.svg')) }}">
         </button>
 
-        <span id="like-count-{{ note.note_id }}">{{ note.like_count }}</span>
+        <span class="stat" id="like-count-{{ note.note_id }}">{{ note.like_count }}</span>
+
+        <button class="toggle-comments-btn" data-note-id="{{ note.note_id }}">
+            <img src="{{ url_for('static', filename='images/comments_idle.svg') }}" alt="Показать комментарии">
+        </button>
 
         <button class="favorite-button" data-note-id="{{ note.note_id }}"
             data-favorited="{{ 'true' if note.is_favorited else 'false' }}">
-            {{ 'Unfavorite' if note.is_favorited else 'Favorite' }}</button>
-        <span id="favorite-count-{{ note.note_id }}">{{ note.favorite_count }}</span>
+            <img
+                src="{{ url_for('static', filename='images/' + ('favorite_hover.svg' if note.is_favorited else 'favorite_idle.svg')) }}">
+        </button>
+
+        <span class="stat" id="favorite-count-{{ note.note_id }}">{{ note.favorite_count }}</span>
     </div>
 
     <div class="comments-section" style="display: none;">

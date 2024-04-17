@@ -1,0 +1,186 @@
+body {
+    background-color: #EED8BF;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+.container {
+    padding: 10px;
+    border: 10px solid rgb(107, 59, 21);
+    background-color: #a46744;
+    margin: 50px auto;
+    margin-bottom: 10px;
+    max-width: 60%;
+    border-radius: 40px;
+    margin-top: 48px;
+}
+
+.header {
+    color: var(--header-color);
+    font-family: var(--header-font);
+    font-size: 32px;
+}
+
+h2 {
+    display: flex;
+    margin: 0 auto;
+    color: #EED8BF;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 27px;
+}
+
+h1 {
+    font-size: 32px;
+    color: rgb(107, 59, 21);
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: bold;
+    display: flex;
+}
+
+.header-container {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    color: #EED8BF;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    text-align: center;
+    justify-content: center;
+}
+
+ul li::marker {
+    color: rgb(82, 37, 13);
+    margin-bottom: 20px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 32px;
+    color: #5a3411;
+}
+
+li {
+    margin-bottom: 20px;
+    color: #EED8BF;
+    font-size: 28px;
+}
+
+.button-action {
+    width: 50%;
+    padding: 20px;
+    background-color: #cb8b66;
+    font-family: var(--main-text-font);
+    font-size: 28px;
+    font-weight: bold;
+    border: 3px solid var(--main-bg-color);
+    margin: 0 auto;
+    margin-bottom: 50px;
+    border-radius: 20px;
+}
+
+.button-action:hover {
+    background-color: #5f3821;
+    color: var(--main-bg-color);
+}
+
+.button-mini {
+    background-color: #cb8b66;
+    border-radius: 40px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 16px;
+    font-weight: bold;
+    border: 3px solid rgb(87, 48, 16);
+}
+
+.button-mini:hover {
+    background-color: #bb6e42;
+}
+
+.content-input {
+    width: 99%;
+    height: 100px;
+    border: 3px solid var(--main-bg-color);
+    border-radius: 20px;
+    background-color: #cb8b66;
+    color: #EED8BF;
+    font-size: 20px;
+}
+
+.ingredient input[type="text"] {
+    width: 40%;
+    height: 50px;
+    border: 3px solid var(--main-bg-color);
+    border-radius: 20px;
+    background-color: #cb8b66;
+    color: #EED8BF;
+    font-size: 20px;
+
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.step input[type="text"] {
+    width: 20%;
+    height: 50px;
+    border: 3px solid var(--main-bg-color);
+    border-radius: 20px;
+    background-color: #cb8b66;
+    color: #EED8BF;
+    font-size: 20px;
+
+}
+
+.step input[type="text"]::placeholder {
+    color: #EED8BF
+}
+
+.recipe-input input[type="text"] {
+    width: 30%;
+    height: 50px;
+    border: 3px solid var(--main-bg-color);
+    border-radius: 20px;
+    background-color: #cb8b66;
+    color: #EED8BF;
+    font-size: 20px;
+}
+
+.recipe-input input[type="text"]::placeholder {
+    color: #EED8BF
+}
+
+.step textarea {
+    width: 40%;
+    height: 120px;
+    border: 3px solid var(--main-bg-color);
+    border-radius: 20px;
+    background-color: #cb8b66;
+    color: #EED8BF;
+    font-size: 20px;
+    resize: none;
+}
+
+.step textarea::placeholder {
+    color: #EED8BF
+}
+
+.ingredient input[type="text"]::placeholder {
+    color: #EED8BF
+}
+
+.input-element {
+    display: flex;
+}
+
+.input-image {
+    display: block;
+    width: 95%;
+    margin: auto;
+    padding: 13px;
+    font-size: 20px;
+    border: none;
+    border-radius: 20px;
+    background: var(--main-bg-color);
+    /* opacity: var(--input-bg-opacity); */
+}

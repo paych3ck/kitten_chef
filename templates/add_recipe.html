@@ -3,28 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KittenChef Recipe</title>
+    <title>KittenChef - добавление рецепта</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/variables.css') }}">
+    <link href="{{ url_for('static', filename='css/style_header.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style_add_note.css') }}" rel="stylesheet">
 </head>
 
 <body>
-    <h1>Добавить рецепт</h1>
-    <form action="/add_recipe" method="POST" enctype="multipart/form-data">
-        <input type="text" name="recipe_name" placeholder="Название рецепта">
-        <div id="ingredients">
-            <h2>Ингредиенты</h2>
-            <div class="ingredient">
-                <input type="text" name="ingredient_name" placeholder="Название ингредиента">
-                <input type="text" name="ingredient_amount" placeholder="Количество">
-            </div>
+    {% include 'base_header.html' %}
+    <div class="container">
+        <div class="header-container">
+            <h1 class="header">Добавление рецепта</h1>
         </div>
-        <button type="button" onclick="addIngredient()">Добавить ингредиент</button>
+        <div class="header-container">
+            <h2>
+                Рецепты — это структурированные записи, которые позволяют точно и понятно передать процесс приготовления
+                блюд, делая акцент на ингредиентах, их количестве и пошаговом выполнении.
+            </h2>
+        </div>
+        <div class="info-container">
+            <ul>
+                <li>
+                    <b>Ясное название:</b> Название рецепта должно быть точным и ясным, чтобы сразу дать представление о
+                    блюде.
+                </li>
+                <li>
+                    Список ингредиентов: Перечислите все необходимые ингредиенты с указанием точных мер и количества.
+                    Это
+                    поможет пользователям легко подготовиться к приготовлению.
+                </li>
+                <li>
+                    Пошаговое приготовление: Описывайте каждый шаг приготовления максимально детально. Указывайте
+                    временные
+                    рамки, температуру и техники, необходимые для идеального результата.
+                </li>
+                <li>
+                    Фотографии процесса и результатов: Иллюстрируйте ключевые моменты приготовления и конечный результат
+                    блюда
+                    фотографиями. Это не только сделает рецепт привлекательнее, но и поможет пользователям правильно
+                    следовать
+                    инструкциям.
+                </li>
+                <li>
+                    Личное прикосновение: Не забудьте добавить комментарии или советы, основанные на вашем личном опыте
+                    приготовления. Это может быть секретный ингредиент или предложение по альтернативным способам
+                    приготовления.
+                </li>
+            </ul>
+        </div>
+    </div>
 
-        <h2>Этапы приготовления</h2>
-        <div id="steps"></div>
-        <button type="button" onclick="addStep()">Добавить этап</button>
+    <div class="container">
+        <form method="POST" action="/add_recipe" enctype="multipart/form-data">
+            <h2>Название</h2>
+            <div class="recipe-input">
+                <input type="text" name="recipe_name" placeholder="Название рецепта">
+            </div>
+            <br>
+            <h2>Ингредиенты</h2>
+            <div id="ingredients">
+                <div class="ingredient">
+                    <input type="text" name="ingredient_name" placeholder="Название ингредиента">
+                    <input type="text" name="ingredient_amount" placeholder="Количество">
+                </div>
+            </div>
+            <br>
+            <button class="button-mini" type="button" onclick="addIngredient()">Добавить ингредиент</button>
 
-        <input type="submit" value="Опубликовать">
-    </form>
+            <br>
+            <h2>Этапы приготовления</h2>
+            <div id="steps">
+                <div class="step">
+                    <input type="text" name="step_title" placeholder="Название этапа">
+                    <input type="text" name="step_duration" placeholder="Длительность">
+                    <textarea name="step_description" placeholder="Описание"></textarea>
+                </div>
+            </div>
+            <br>
+            <button class="button-mini" type="button" onclick="addStep()">Добавить этап</button>
+
+            <br>
+            <div class="input-element">
+                <input class="button-action" type="submit" value="Опубликовать">
+            </div>
+        </form>
+    </div>
 
     <script src="{{ url_for('static', filename='js/add_recipe.js') }}"></script>
 </body>

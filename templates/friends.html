@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/variables.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_header.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_friends.css') }}">
 </head>
@@ -13,7 +14,7 @@
 <body>
     {% include 'base_header.html' %}
     {% if not pending_invites and not friends %}
-    <img src="{{ url_for('static', filename='images/kitten_not_friends.png') }}" alt="not_friends">
+    <img src="{{ url_for('static', filename='images/kitten_not_friends.png') }}">
     <div class="name-container">
         <h1>У Вас пока нет друзей...</h1>
     </div>
@@ -21,7 +22,7 @@
     {% if pending_invites %}
     <div class="container">
         <div class="name-container">
-            <h2>Ожидающие заявки</h2>
+            <h1 class="headers">Ожидающие заявки</h1>
         </div>
         <ul class="request-list">
             {% for invite in pending_invites %}
@@ -50,7 +51,7 @@
     {% if friends %}
     <div class="container">
         <div class="name-container">
-            <h2>Друзья</h2>
+            <h1 class="headers">Друзья</h1>
         </div>
         <ul class="friend-list">
             {% for friend in friends %}

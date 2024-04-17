@@ -182,6 +182,7 @@ def handle_send_message(data):
 @login_required
 def messages():
     chats = db.get_chats_for_user_by_id(current_user.id)
+    print(chats)
     return render_template('messages.html', chats=chats)
 
 
@@ -375,9 +376,10 @@ def user_profile(username):
         abort(404)
 
     user_id = current_user.id
-    notes = db.get_notes(user_id=user_id, notes=True)
-    notes = process_notes(db, notes, user_id)
     friend_id = user_info['user_id']
+    notes = db.get_notes(user_id=friend_id, notes=True)
+    notes = process_notes(db, notes, friend_id)
+
     friendship_status = db.check_friendship_status(user_id, friend_id)
 
     if friendship_status == 'pending':

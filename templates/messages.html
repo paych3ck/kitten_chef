@@ -5,20 +5,23 @@
     <title>KittenChef - мессенджер</title>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/variables.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_header.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_messenger.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_messages.css') }}">
 </head>
 
 <body>
-    <!-- {% include 'base_header.html' %} -->
-    <ul>
+    {% include 'base_header.html' %}
+    <div class="chat-list">
         {% for chat in chats %}
-        <li>
-            <span>{{ chat.chat_partner_username }}</span>
-            <span>{{ chat.last_message_text }}</span>
-            <a href="{{ url_for('chat', chat_username=chat.chat_partner_username) }}">Перейти
-                к переписке</a>
-        </li>
+        <a class="chat-block" href="{{ url_for('chat', chat_username=chat.chat_partner_username) }}">
+            <img src="{{ url_for('uploaded_file', filename='avatars/' + chat.chat_partner_avatar) }}" class="avatar">
+            <div class="chat-info">
+                <span class="username">{{ chat.chat_partner_username }}</span>
+                <span class="last-message">{{ chat.last_message_text }}</span>
+            </div>
+        </a>
         {% endfor %}
+    </div>
     </ul>
 </body>
