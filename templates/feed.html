@@ -6,6 +6,7 @@
     <title>KittenChef - лента новостей</title>
     <link href="{{ url_for('static', filename='css/style_header.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style_feed.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style_posts.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -19,37 +20,7 @@
         </a>
     </div>
 
-    <div class="news-feed">
-        {% for note in notes %}
-        <div class="post">
-            <img src="{{ url_for('uploaded_file', filename='avatars/' + note.profile_picture) }}" alt="Аватар автора"
-                class="avatar">
-            <a href="/user/{{ note.username }}" class="meta-info">{{ note.username }}</a>
-            <span class="meta-info">{{ convert_datetime_in_feed(note.created_at) }}</span>
-            {% if note.type == 'post' %}
-            <p class="content">{{ note.content }}</p>
-            {% elif note.type == 'recipe' %}
-            <p class="content"> {{ note.recipe_name }}</p>
-            <h2>Ингредиенты</h1>
-                <ul>
-                    {% for ingredient in note.ingredients %}
-                    <li>{{ ingredient.name }} - {{ ingredient.amount }}</li>
-                    {% endfor %}
-                </ul>
-
-                <h2>Шаги приготовления</h2>
-                <ul>
-                    {% for step in note.steps %}
-                    <h3>{{ step.title }}</h3>
-                    <li>{{ step.duration }} - {{ step.description }}</li>
-                    {% endfor %}
-                </ul>
-
-                {% endif %}
-        </div>
-        {% endfor %}
-    </div>
-
+    {% include 'posts.html' %}
 </body>
 
 </html>

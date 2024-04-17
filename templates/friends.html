@@ -5,7 +5,7 @@
     <title>KittenChef - список друзей</title>
     <meta charset="UTF-8">
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}"/>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_header.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_friends.css') }}">
 </head>
@@ -13,65 +13,67 @@
 <body>
     {% include 'base_header.html' %}
     {% if not pending_invites and not friends %}
-        <img src="{{ url_for('static', filename='images/kitten_not_friends.png') }}" alt="not_friends">
-        <div class="name-container">
-            <h1>У Вас пока нет друзей...</h1>
-        </div>
+    <img src="{{ url_for('static', filename='images/kitten_not_friends.png') }}" alt="not_friends">
+    <div class="name-container">
+        <h1>У Вас пока нет друзей...</h1>
+    </div>
     {% endif %}
     {% if pending_invites %}
-        <div class="container">
-            <div class="name-container">
-                <h2>Ожидающие заявки</h2>
-            </div>
-            <ul class="request-list">
-                {% for invite in pending_invites %}
-                    <form action="/friends" method="post">
-                        <li class="request">
-                            <div class="user-info">
-                                <img src="{{ url_for('uploaded_file', filename='avatars/' + invite.profile_picture) }}" alt="Аватар" class="avatar">
-                                <div class="info">
-                                    <h4>{{ invite.username }}</h4>
-                                    <p>{{ invite.status }}</p>
-                                </div>
-                            </div>
-                            <div class="actions">
-                                <input type="hidden" name="invite_id" value="{{ invite.user_id }}">
-                                <button type="submit" name="action" value="accept">Принять</button>
-                                <button type="submit" name="action" value="reject">Отклонить</button>
-                            </div>
-                        </li>
-                    </form>
-                {% endfor %}
-            </ul>
+    <div class="container">
+        <div class="name-container">
+            <h2>Ожидающие заявки</h2>
         </div>
+        <ul class="request-list">
+            {% for invite in pending_invites %}
+            <form action="/friends" method="post">
+                <li class="request">
+                    <div class="user-info">
+                        <img src="{{ url_for('uploaded_file', filename='avatars/' + invite.profile_picture) }}"
+                            alt="Аватар" class="avatar">
+                        <div class="info">
+                            <h4>{{ invite.username }}</h4>
+                            <p>{{ invite.status }}</p>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <input type="hidden" name="invite_id" value="{{ invite.user_id }}">
+                        <button type="submit" name="action" value="accept">Принять</button>
+                        <button type="submit" name="action" value="reject">Отклонить</button>
+                    </div>
+                </li>
+            </form>
+            {% endfor %}
+        </ul>
+    </div>
     {% endif %}
 
     {% if friends %}
-        <div class="container">
-            <div class="name-container">
-                <h2>Друзья</h2>
-            </div>    
-            <ul class="friend-list">
-                {% for friend in friends %}
-                    <form action="/friends" method="post">
-                        <li class="friend">
-                            <div class="user-info">
-                                <img src="{{ url_for('uploaded_file', filename='avatars/' + friend.profile_picture) }}" alt="Аватар" class="avatar">
-                                <div class="info">
-                                    <h4>{{ friend.username }}</h4>
-                                    <p>{{ friend.status }}</p>
-                                </div>
-                            </div>
-                            <div class="actions">
-                                <input type="hidden" name="friend_id" value="{{ friend.user_id }}">
-                                <button type="submit" name="action" value="send_message">Написать сообщение</button>
-                                <button type="submit" name="action" value="delete">Удалить из друзей</button>
-                            </div>
-                        </li>
-                    </form>
-                {% endfor %}
-            </ul>
+    <div class="container">
+        <div class="name-container">
+            <h2>Друзья</h2>
         </div>
+        <ul class="friend-list">
+            {% for friend in friends %}
+            <form action="/friends" method="post">
+                <li class="friend">
+                    <div class="user-info">
+                        <img src="{{ url_for('uploaded_file', filename='avatars/' + friend.profile_picture) }}"
+                            alt="Аватар" class="avatar">
+                        <div class="info">
+                            <h4>{{ friend.username }}</h4>
+                            <p>{{ friend.status }}</p>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <input type="hidden" name="friend_id" value="{{ friend.user_id }}">
+                        <button type="submit" name="action" value="send_message">Написать сообщение</button>
+                        <button type="submit" name="action" value="delete">Удалить из друзей</button>
+                    </div>
+                </li>
+            </form>
+            {% endfor %}
+        </ul>
+    </div>
     {% endif %}
 
 </body>

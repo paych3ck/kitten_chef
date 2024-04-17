@@ -75,6 +75,65 @@ class DbConnection:
         cursor.close()
         self.disconnect()
 
+    def add_like(self, user_id, note_id):
+        self.connect()
+        cursor = self.connection.cursor()
+
+        query = '''
+        INSERT INTO likes(user_id, note_id) VALUES (%s, %s)
+        '''
+
+        cursor.execute(query, (user_id, note_id))
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+
+    def add_comment(self, user_id, note_id, content):
+        self.connect()
+        cursor = self.connection.cursor()
+
+        query = '''
+        INSERT INTO comments(user_id, note_id, content) VALUES (%s, %s, %s)
+        '''
+
+        cursor.execute(query, (user_id, note_id, content))
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+
+    def get_comments_for_note(self, note_id):
+        self.connect()
+        cursor = self.connection.cursor()
+
+        query = '''
+        SELECT users.username, users.profile_picture,
+        comments.content, comments.created_at
+        FROM comments
+        INNER JOIN users ON comments.user_id = users.user_id
+        WHERE comments.note_id = %s
+        ORDER BY comments.created_at ASC
+        '''
+
+        cursor.execute(query, (note_id,))
+        res = cursor.fetchall()
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+        return res
+
+    def remove_like(self, user_id, note_id):
+        self.connect()
+        cursor = self.connection.cursor()
+
+        query = '''
+        DELETE FROM likes WHERE user_id = %s AND note_id = %s
+        '''
+
+        cursor.execute(query, (user_id, note_id))
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+
     def add_user(self, data):
         self.connect()
         cursor = self.connection.cursor()
@@ -89,18 +148,102 @@ class DbConnection:
         cursor.close()
         self.disconnect()
 
-    def get_all_notes(self):
+    def has_like(self, user_id, note_id):
+        self.connect()
+        cursor = self.connection.cursor()
+
+        query = '''
+        SELECT COUNT(1)
+        FROM likes
+        WHERE user_id = %s AND note_id = %s
+        '''
+
+        cursor.execute(query, (user_id, note_id))
+        result = cursor.fetchone()
+        cursor.close()
+        self.disconnect()
+        return result[0] > 0
+
+    def has_favorite(self, user_id, note_id):
+        self.connect()
+        cursor = self.connection.cursor()
+
+        query = '''
+        SELECT COUNT(1)
+        FROM favorites
+        WHERE user_id = %s AND note_id = %s
+        '''
+
+        cursor.execute(query, (user_id, note_id))
+        result = cursor.fetchone()
+        cursor.close()
+        self.disconnect()
+        return result[0] > 0
+
+    def add_favorite(self, user_id, note_id):
+        self.connect()
+        cursor = self.connection.cursor()
+
+        query = '''
+        INSERT INTO favorites (user_id, note_id) VALUES (%s, %s)
+        '''
+
+        cursor.execute(query, (user_id, note_id))
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+
+    def remove_favorite(self, user_id, note_id):
+        self.connect()
+        cursor = self.connection.cursor()
+
+        query = '''
+        DELETE FROM favorites WHERE user_id = %s AND note_id = %s
+        '''
+
+        cursor.execute(query, (user_id, note_id))
+        self.connection.commit()
+        cursor.close()
+        self.disconnect()
+
+    def get_notes(self, user_id=None, notes=False,
+                  likes=False, favorites=False):
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
 
         query = '''
-        SELECT notes.*, users.username, users.profile_picture
+        SELECT notes.*, users.username, users.profile_picture,
+        COUNT(DISTINCT likes.like_id) AS like_count,
+        COUNT(DISTINCT comments.comment_id) AS comment_count,
+        COUNT(DISTINCT favorites.favorite_id) AS favorite_count
         FROM notes
         INNER JOIN users ON notes.user_id = users.user_id
-        ORDER BY notes.created_at DESC;
+        LEFT JOIN likes ON notes.note_id = likes.note_id
+        LEFT JOIN comments ON notes.note_id = comments.note_id
+        LEFT JOIN favorites ON notes.note_id = favorites.note_id
         '''
 
-        cursor.execute(query)
+        if user_id is not None:
+            if notes:
+                query += ' WHERE notes.user_id = %s'
+
+            if likes:
+                query += ' WHERE likes.user_id = %s'
+
+            if favorites:
+                query += ' WHERE favorites.user_id = %s'
+
+        query += '''
+        GROUP BY notes.note_id, users.username, users.profile_picture
+        ORDER BY notes.created_at DESC
+        '''
+
+        if user_id is not None:
+            cursor.execute(query, (user_id,))
+
+        else:
+            cursor.execute(query)
+
         res = cursor.fetchall()
         cursor.close()
         self.disconnect()
@@ -113,7 +256,7 @@ class DbConnection:
         query = '''
         SELECT posts.content
         FROM notes
-        LEFT JOIN posts ON notes.note_id = posts.note_id 
+        LEFT JOIN posts ON notes.note_id = posts.note_id
         WHERE notes.type = 'post' AND notes.note_id = %s
         '''
 
@@ -143,9 +286,15 @@ class DbConnection:
     def get_messages_for_chat(self, user_id_1, user_id_2):
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
+
         query = '''
-        SELECT m.message_id, m.sender_id, s.username AS sender_username, s.profile_picture AS sender_avatar,
-        m.receiver_id, r.username AS receiver_username, r.profile_picture AS receiver_avatar, m.content, m.sent_at
+        SELECT m.message_id, m.sender_id,
+        s.username AS sender_username,
+        s.profile_picture AS sender_avatar,
+        m.receiver_id,
+        r.username AS receiver_username,
+        r.profile_picture AS receiver_avatar,
+        m.content, m.sent_at
         FROM messages m
         JOIN users s ON m.sender_id = s.user_id
         JOIN users r ON m.receiver_id = r.user_id
@@ -169,22 +318,22 @@ class DbConnection:
         m1.content AS last_message_text,
         m1.sent_at AS last_message_sent_at
         FROM messages m1
-        INNER JOIN users u ON u.user_id = CASE 
-        WHEN m1.sender_id = %s THEN m1.receiver_id 
-        ELSE m1.sender_id 
+        INNER JOIN users u ON u.user_id = CASE
+        WHEN m1.sender_id = %s THEN m1.receiver_id
+        ELSE m1.sender_id
         END
         WHERE (m1.sender_id = %s OR m1.receiver_id = %s) AND m1.sent_at = (
         SELECT MAX(m2.sent_at)
         FROM messages m2
-        WHERE 
-        (m2.sender_id = m1.sender_id AND m2.receiver_id = m1.receiver_id)
-        OR (m2.sender_id = m1.receiver_id AND m2.receiver_id = m1.sender_id)
+        WHERE
+        (m2.sender_id=m1.sender_id AND m2.receiver_id=m1.receiver_id)
+        OR(m2.sender_id=m1.receiver_id AND m2.receiver_id=m1.sender_id)
         )
-        GROUP BY 
-        chat_partner_username, 
-        last_message_text, 
+        GROUP BY
+        chat_partner_username,
+        last_message_text,
         last_message_sent_at
-        ORDER BY 
+        ORDER BY
         last_message_sent_at DESC;
         '''
 
@@ -288,7 +437,7 @@ class DbConnection:
         cursor = self.connection.cursor(buffered=True, dictionary=True)
 
         query = '''
-        INSERT INTO user_friends (user_id, friend_id, status)
+        INSERT INTO user_friends(user_id, friend_id, status)
         VALUES (%s, %s, 'pending')
         ON DUPLICATE KEY UPDATE status = 'pending';
         '''
@@ -309,11 +458,12 @@ class DbConnection:
 
         cursor.execute(confirm_query, (user_id, friend_id))
 
-        reciprocal_query = """
-            INSERT INTO user_friends (user_id, friend_id, status)
-            VALUES (%s, %s, 'accepted')
-            ON DUPLICATE KEY UPDATE status = 'accepted';
-            """
+        reciprocal_query = '''
+        INSERT INTO user_friends(user_id, friend_id, status)
+        VALUES (%s, %s, 'accepted')
+        ON DUPLICATE KEY UPDATE status = 'accepted';
+        '''
+
         cursor.execute(reciprocal_query, (friend_id, user_id))
         self.connection.commit()
         cursor.close()
@@ -322,11 +472,13 @@ class DbConnection:
     def delete_friend(self, user_id, friend_id):
         self.connect()
         cursor = self.connection.cursor()
-        query = """
-                DELETE FROM user_friends
-                WHERE (user_id = %s AND friend_id = %s)
-                OR (user_id = %s AND friend_id = %s);
-                """
+
+        query = '''
+        DELETE FROM user_friends
+        WHERE (user_id = %s AND friend_id = %s)
+        OR (user_id = %s AND friend_id = %s);
+        '''
+
         cursor.execute(query, (user_id, friend_id, friend_id, user_id))
         self.connection.commit()
         cursor.close()
@@ -335,11 +487,13 @@ class DbConnection:
     def check_friendship_status(self, user_id, friend_id):
         self.connect()
         cursor = self.connection.cursor(buffered=True, dictionary=True)
-        query = """
-            SELECT status FROM user_friends
-            WHERE (user_id = %s AND friend_id = %s)
-            OR (user_id = %s AND friend_id = %s);
-        """
+
+        query = '''
+        SELECT status FROM user_friends
+        WHERE (user_id = %s AND friend_id = %s)
+        OR (user_id = %s AND friend_id = %s);
+        '''
+
         cursor.execute(query, (user_id, friend_id, friend_id, user_id))
         result = cursor.fetchone()
         return 'not_friends' if result is None else result['status']
@@ -347,12 +501,15 @@ class DbConnection:
     def check_pending_invites(self, user_id):
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
-        query = """
-                SELECT users.user_id, users.username, users.profile_picture, users.status
-                FROM user_friends
-                JOIN users ON user_friends.user_id = users.user_id
-                WHERE user_friends.friend_id = %s AND user_friends.status = 'pending';
-                """
+
+        query = '''
+        SELECT users.user_id, users.username,
+        users.profile_picture, users.status
+        FROM user_friends
+        JOIN users ON user_friends.user_id = users.user_id
+        WHERE user_friends.friend_id = %s AND user_friends.status = 'pending';
+        '''
+
         cursor.execute(query, (user_id,))
         pending_invites = cursor.fetchall()
         cursor.close()
@@ -362,13 +519,18 @@ class DbConnection:
     def get_all_friends(self, user_id):
         self.connect()
         cursor = self.connection.cursor(dictionary=True)
-        query = """
-                    SELECT users.user_id, users.username, users.profile_picture, users.status
-                    FROM user_friends
-                    JOIN users ON (user_friends.friend_id = users.user_id OR user_friends.user_id = users.user_id)
-                    WHERE (user_friends.user_id = %s OR user_friends.friend_id = %s) AND user_friends.status = 'accepted'
-                    AND users.user_id != %s;
-                    """
+
+        query = '''
+        SELECT users.user_id, users.username,
+        users.profile_picture, users.status
+        FROM user_friends
+        JOIN users ON(user_friends.friend_id=users.user_id
+        OR user_friends.user_id=users.user_id)
+        WHERE (user_friends.user_id = %s OR user_friends.friend_id = %s)
+        AND user_friends.status = 'accepted'
+        AND users.user_id != %s;
+        '''
+
         cursor.execute(query, (user_id, user_id, user_id))
         friends = cursor.fetchall()
         cursor.close()

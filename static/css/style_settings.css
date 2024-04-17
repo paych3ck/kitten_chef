@@ -1,40 +1,58 @@
 body {
-    background-color: #EED8BF;
+    background-color: var(--main-bg-color);
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--main-font);
     font-size: 16px;
     font-weight: bold;
 }
+
 h1 {
     text-align: center;
     margin-top: 0;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: var(--header-font);
     font-size: 32px;
 }
+
+.settings {
+    color: var(--header-color);
+    font-size: 32px;
+}
+
+
 hr {
-    border-color: rgb(107, 59, 21);
+    border-color: var(--border-color);
     width: 100%;
     opacity: 0.5;
 }
+
+.container-settings,
+.button-action {
+    border: 10px solid var(--border-color);
+    border-radius: 40px;
+}
+
 .container-settings {
-    border: 10px solid rgb(107, 59, 21);
-    background-color: #a46744;
+    background-color: var(--container-bg-color);
     margin: 20px auto;
     max-width: 50%;
     max-height: 100%;
     height: auto;
-    border-radius: 40px;
-    margin-top: 100px;
+    margin-top: 48px;
 }
+
+.name-container,
+label {
+    color: var(--main-bg-color);
+}
+
 .name-container {
     margin-top: 20px;
-    color: #EED8BF;
 }
+
 label {
     display: block;
     padding: 13px;
     font-weight: bold;
-    color: #EED8BF;
 }
 
 input {
@@ -45,21 +63,23 @@ input {
     font-size: 20px;
     border: none;
     border-radius: 20px;
-    background: #EED8BF;
-    opacity: 0.5;
+    background: var(--main-bg-color);
+    opacity: var(--input-bg-opacity);
 }
+
 .button-action {
     width: 50%;
     padding: 20px;
-    background-color: #cb8b66;
-    border-radius: 40px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    background-color: var(--button-active-bg-color);
+    font-family: var(--font-secondary);
     font-size: 28px;
     font-weight: bold;
-    border: 3px solid rgb(87, 48, 16);
+    border: 3px solid var(--main-bg-color);
+    margin: 0 auto;
     margin-bottom: 50px;
 }
+
 .button-action:hover {
-    background-color: #5f3821;
-    color: #EED8BF;
+    background-color: var(--button-hover-bg-color);
+    color: var(--main-bg-color);
 }

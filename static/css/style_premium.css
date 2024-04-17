@@ -46,13 +46,13 @@ li {
     margin: 50px auto;
     max-width: 60%;
     border-radius: 40px;
-    margin-top: 10%;
+    margin-top: 48px;
     /* text-align: center; */
 }
 
 .info-container {
     font-family: Georgia, 'Times New Roman', Times, serif;
-    color:#EED8BF;
+    color: #EED8BF;
     font-size: 30px;
     /* display: flex; */
     align-items: center;
@@ -61,19 +61,21 @@ li {
 
 .header-container {
     font-family: Georgia, 'Times New Roman', Times, serif;
-    color:#EED8BF;
+    color: #EED8BF;
     font-size: 30px;
     display: flex;
     align-items: center;
     margin-bottom: 20px;
     text-align: center;
 }
+
 .button-container {
     display: flex;
     justify-content: center;
 }
+
 .buybutton-container {
-    display:inline-block;
+    display: inline-block;
     background-color: #c08752;
     border: 10px solid rgb(107, 59, 21);
     border-radius: 40px;
@@ -83,13 +85,14 @@ li {
     width: 20%;
     text-align: center;
 }
-.buttons-container{
-    display: inline
+
+.buttons-container {
+    display: inline;
     width: 100%;
     margin: 0 auto;
 }
 
-.text{
+.text {
     padding: 20px;
     display: flex;
     margin: 0 auto;
@@ -98,6 +101,7 @@ li {
     text-align: center;
     justify-content: center;
 }
+
 input.submit {
     width: 70%;
     padding: 20px;

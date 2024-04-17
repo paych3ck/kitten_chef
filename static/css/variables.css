@@ -1,0 +1,25 @@
+:root {
+    --main-bg-color: #eed8bf;
+    --border-color: #6b3b15;
+
+    --main-container-bg-color: #a46744;
+    --header-color: #eed8bf;
+    --header-font: Georgia, 'Times New Roman', Times, serif;
+    --header-size: 32px;
+
+    --main-text-color: #58331d;
+    --main-text-font: Arial, Helvetica, sans-serif;
+
+    --profile-picture-border: 5px solid var(--border-color);
+    --profile-picture-bg: var(--main-bg-color);
+
+    --input-bg-opacity: 0.5;
+
+    --action-button-border-color:
+}
+
+/* :root {
+    --button-hover-bg-color: #5f3821;
+    --button-active-bg-color: #cb8b66;
+    
+} */

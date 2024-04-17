@@ -1,23 +1,25 @@
-import json
 import os
 
 from user import User
 from dbconnection import DbConnection
 from miscs import convert_datetime_in_feed, \
     convert_datetime_in_chat, generate_random_password, \
-    current_time, process_recipe
+    current_time, process_recipe, convert_comments_to_json, \
+    process_notes
 from forms import AddFriendForm, \
     UserSettingsForm, RegisterForm, LoginForm, \
     PasswordRecoveryForm, AddPostForm
 
 from flask import Flask, request, render_template, \
-    redirect, send_from_directory, url_for, flash, abort
+    redirect, send_from_directory, url_for, flash, \
+    jsonify, abort
 from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, \
     logout_user, login_required, current_user
 from flask_socketio import SocketIO, emit, \
     join_room, leave_room
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, \
+    check_password_hash
 from werkzeug.utils import secure_filename
 
 # from yookassa import Configuration, Payment
@@ -205,7 +207,8 @@ def settings():
         user_profile_picture = user_settings_form.profile_picture.data
 
         if current_user.username != user_username:
-            db.update_user_username(user_id, user_username)
+            if current_user.is_premium:
+                db.update_user_username(user_id, user_username)
 
         if current_user.email != user_email:
             db.update_user_email(user_id, user_email)
@@ -224,11 +227,6 @@ def settings():
 
     return render_template('settings.html',
                            user_settings_form=user_settings_form)
-
-# @application.route('/post/<int:post_id>')
-# def post(post_id):
-#     post_info = db.get_post_by_id(post_id)
-#     return render_template('post.html', post_info=post_info)
 
 
 @application.route('/add_post', methods=['GET', 'POST'])
@@ -289,25 +287,86 @@ def friends():
                            pending_invites=pending_invites, friends=friends)
 
 
+@application.route('/like', methods=['POST'])
+def like_post():
+    user_id = current_user.id
+    note_id = request.json['note_id']
+
+    if db.has_like(user_id, note_id):
+        db.remove_like(user_id, note_id)
+        return jsonify({'status': 'like removed'})
+
+    else:
+        db.add_like(user_id, note_id)
+        return jsonify({'status': 'like added'})
+
+
+@application.route('/favorite', methods=['POST'])
+def favorite_post():
+    user_id = current_user.id
+    note_id = request.json['note_id']
+
+    if db.has_favorite(user_id, note_id):
+        db.remove_favorite(user_id, note_id)
+        return jsonify({'status': 'favorite removed'})
+
+    else:
+        db.add_favorite(user_id, note_id)
+        return jsonify({'status': 'favorite added'})
+
+
+@application.route('/add-comment', methods=['POST'])
+def comment():
+    user_id = current_user.id
+    note_id = request.json['note_id']
+    content = request.json['content']
+    db.add_comment(user_id, note_id, content)
+
+    return jsonify({'status': 'success',
+                    'username': current_user.username,
+                    'profile_picture': current_user.profile_picture,
+                    'content': content,
+                    'timestamp': convert_datetime_in_feed(current_time())})
+
+
+@application.route('/get-comments/<int:note_id>')
+def get_comments(note_id):
+    note_comments = db.get_comments_for_note(note_id)
+    comments = convert_comments_to_json(note_comments)
+    return jsonify(comments)
+
+
 @application.route('/feed', methods=['GET', 'POST'])
 @login_required
 def feed():
-    notes = db.get_all_notes()
-
-    for note in notes:
-        if note['type'] == 'post':
-            note.update(db.get_post_info(note['note_id']))
-
-        elif note['type'] == 'recipe':
-            recipe_data = db.get_recipe_info(note['note_id'])
-            recipe_data['ingredients'] = json.loads(recipe_data['ingredients'])
-            recipe_data['steps'] = json.loads(recipe_data['steps'])
-            note.update(recipe_data)
+    user_id = current_user.id
+    notes = db.get_notes()
+    notes = process_notes(db, notes, user_id)
 
     return render_template('feed.html', notes=notes)
 
 
+@application.route('/likes')
+@login_required
+def likes():
+    user_id = current_user.id
+    liked_notes = db.get_notes(user_id=user_id, likes=True)
+    notes = process_notes(db, liked_notes, user_id)
+
+    return render_template('likes.html', notes=notes)
+
+
+@application.route('/favorites')
+@login_required
+def favorites():
+    user_id = current_user.id
+    favorited_notes = db.get_notes(user_id=user_id, favorites=True)
+    notes = process_notes(db, favorited_notes, user_id)
+    return render_template('favorites.html', notes=notes)
+
+
 @application.route('/user/<string:username>', methods=['GET', 'POST'])
+@login_required
 def user_profile(username):
     add_friend_form = AddFriendForm()
     user_info = db.get_user_by_username(username)
@@ -316,6 +375,8 @@ def user_profile(username):
         abort(404)
 
     user_id = current_user.id
+    notes = db.get_notes(user_id=user_id, notes=True)
+    notes = process_notes(db, notes, user_id)
     friend_id = user_info['user_id']
     friendship_status = db.check_friendship_status(user_id, friend_id)
 
@@ -336,7 +397,8 @@ def user_profile(username):
 
     return render_template('user_profile.html', user_info=user_info,
                            add_friend_form=add_friend_form,
-                           friendship_status=friendship_status)
+                           friendship_status=friendship_status,
+                           notes=notes)
 
 
 @application.route('/premium')

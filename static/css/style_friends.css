@@ -33,18 +33,21 @@ body {
 .info {
     flex-grow: 1;
 }
-.name-container{
+
+.name-container {
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 h2 {
     display: flex;
     margin: 0 auto;
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-size: 32px;
 }
-h1{
+
+h1 {
     display: flex;
     margin: 0 auto;
     font-family: Georgia, 'Times New Roman', Times, serif;
@@ -52,6 +55,7 @@ h1{
     text-align: center;
     font-weight: bold;
 }
+
 .info h4,
 .info p {
     margin: 0;
@@ -60,16 +64,21 @@ h1{
 .actions {
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* Выравниваем кнопки по правому краю */
-    justify-content: space-between; /* Распределяем кнопки вертикально */
-    height: 100%; /* Высота соответствует высоте .user-info */
-    margin-left: 15px; /* Добавляем отступ слева от блока кнопок */
+    align-items: flex-end;
+    /* Выравниваем кнопки по правому краю */
+    justify-content: space-between;
+    /* Распределяем кнопки вертикально */
+    height: 100%;
+    /* Высота соответствует высоте .user-info */
+    margin-left: 15px;
+    /* Добавляем отступ слева от блока кнопок */
 }
 
 .actions button {
     padding: 5px;
     width: 100%;
-    margin: 4px 0; /* Добавляем небольшой отступ между кнопками */
+    margin: 4px 0;
+    /* Добавляем небольшой отступ между кнопками */
     margin-right: 10px;
     background-color: #cb8b66;
     border-radius: 40px;
@@ -79,6 +88,7 @@ h1{
     float: right;
     border: 3px solid rgb(87, 48, 16);
 }
+
 button:hover {
     background-color: #bb6e42;
 }
@@ -97,11 +107,14 @@ button:hover {
 .user-info {
     display: flex;
     align-items: center;
-    flex-grow: 1; /* Заставляет блок информации занимать всё доступное пространство */
+    flex-grow: 1;
+    /* Заставляет блок информации занимать всё доступное пространство */
 }
+
 img {
     display: block;
-    margin-left: 30%; /* Отступ справа от картинки */
+    margin-left: 30%;
+    /* Отступ справа от картинки */
     width: 800px;
     height: 800px;
 }

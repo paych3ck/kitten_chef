@@ -27,6 +27,37 @@ def convert_datetime_in_chat(time):
     return time.strftime("%d.%m.%Y %H:%M:%S")
 
 
+def convert_comments_to_json(comments):
+    comments_list = []
+
+    for comment in comments:
+        comments_list.append({
+            'username': comment[0],
+            'avatar': comment[1],
+            'content': comment[2],
+            'timestamp': convert_datetime_in_feed(comment[3])
+        })
+
+    return comments_list
+
+
+def process_notes(db, notes, user_id):
+    for note in notes:
+        note['is_liked'] = db.has_like(user_id, note['note_id'])
+        note['is_favorited'] = db.has_favorite(user_id, note['note_id'])
+
+        if note['type'] == 'post':
+            note.update(db.get_post_info(note['note_id']))
+
+        elif note['type'] == 'recipe':
+            recipe_data = db.get_recipe_info(note['note_id'])
+            recipe_data['ingredients'] = json.loads(recipe_data['ingredients'])
+            recipe_data['steps'] = json.loads(recipe_data['steps'])
+            note.update(recipe_data)
+
+    return notes
+
+
 def process_recipe(recipe_form):
     ingredients = []
     steps = []
