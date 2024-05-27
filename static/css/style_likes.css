@@ -1,0 +1,11 @@
+.user-likes {
+    margin-top: 48px;
+}
+
+body {
+    background-color: var(--main-bg-color);
+    margin: 0;
+    font-family: var(--main-text-font);
+    font-size: 16px;
+    font-weight: bold;
+}

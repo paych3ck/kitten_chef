@@ -5,16 +5,23 @@
     <title>KittenChef - сообщения с {{ chat_username }}</title>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}" />
+    <link href="{{ url_for('static', filename='css/style_header.css') }}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_chat.css') }}">
 </head>
 
 <body>
-    <h1>Сообщения</h1>
-    <div id="chat-wrap">
-        <div id="chat"></div>
-        <div id="enter-message">
-            <textarea name="message" id="message" rows="3"></textarea>
-            <button id="add-message-btn">Add message</button>
+    {% include 'base_header.html' %}
+
+    <div id="chat-page">
+        <div id="chat-header">
+            <h1>Сообщения с {{ chat_username }}</h1>
+        </div>
+        <div id="chat-wrap">
+            <div id="chat"></div>
+            <div id="enter-message">
+                <textarea name="message" id="message" rows="3"></textarea>
+                <button id="add-message-btn">Отправить сообщение</button>
+            </div>
         </div>
     </div>
 
@@ -48,13 +55,28 @@
         })
 
         const newMessage = data => {
-            const newMsg = document.createElement('div')
-            newMsg.classList.add('msg')
+            const newMsg = document.createElement('div');
+            newMsg.classList.add('msg');
 
-            newMsg.innerHTML = `<div><small>${data.sent_at}</small></div> ${data.sender_username}: ${data.content}`
+            const avatarUrl = `{{ url_for('uploaded_file', filename='avatars/') }}${data.sender_avatar}`;
+            const profileUrl = `/user/${data.sender_username}`;
 
-            chat.append(newMsg)
-        }
+            newMsg.innerHTML = `
+                <div class="message-header">
+                    <img class="avatar" src="${avatarUrl}">
+                    <div class="message-info">
+                        <a href="${profileUrl}" class="sender-username">${data.sender_username}</a>
+                        <small class="sent-at">${data.sent_at}</small>
+                    </div>
+                </div>
+                <div class="message-content">
+                    ${data.content}
+                </div>
+            `;
+
+            chat.append(newMsg);
+        };
+
 
         window.addEventListener('beforeunload', function (event) {
             socket.emit('leave', {

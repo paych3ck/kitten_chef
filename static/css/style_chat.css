@@ -1,11 +1,21 @@
-* {
+/* * {
     box-sizing: border-box;
+} */
+
+#chat-page {
+    margin-top: 52px;
+}
+
+#chat-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 body {
-    font-family: sans-serif;
-    font-size: 1.2rem;
-    line-height: 1.4;
+    background-color: #EED8BF;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
 }
 
 button {
@@ -33,7 +43,7 @@ select {
 }
 
 #chat-wrap {
-    background-color: #EEE;
+    background-color: #eea77e;
     margin: 15px 0;
     padding: 15px;
 }
@@ -46,13 +56,13 @@ select {
     color: grey;
 }
 
-#chat .msg.me {
+/* #chat .msg.me {
     background-color: limegreen;
 }
 
 #chat .msg.not-me {
     background-color: oldlace;
-}
+} */
 
 #message {
     width: 100%;
@@ -61,4 +71,57 @@ select {
 textarea {
     outline: none;
     padding: 5px;
+}
+
+.msg {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.message-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.message-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.sender-username {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.sent-at {
+    font-size: 0.8em;
+    color: #999;
+}
+
+.message-content {
+    margin-top: 5px;
+}
+
+.sender-username {
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.sender-username:hover {
+    text-decoration: underline;
 }

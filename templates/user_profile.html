@@ -35,12 +35,15 @@
         </form>
         {% endif %}
     </div>
+
+    {% if current_user.username == user_info.username %}
     <div class="buttons-container">
         <a href="/likes" class="clickable-container">Лайки</a>
     </div>
     <div class="buttons-container">
-        <a href="/favorites" class="clickable-container">Коллекции</a>
+        <a href="/favorites" class="clickable-container">Избранное</a>
     </div>
+    {% endif %}
     {% include 'posts.html' %}
 </body>
 

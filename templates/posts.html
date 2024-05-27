@@ -20,7 +20,11 @@
         <ul class="recipe-text">
             {% for step in note.steps %}
             <h3>{{ step.title }}</h3>
-            <li>{{ step.duration }} - {{ step.description }}</li>
+            <li>
+                <span>{{ step.duration }} - {{ step.description }}</span>
+                <button class="start-timer-btn" data-duration="{{ step.duration }}">Запустить таймер</button>
+                <span class="timer-display"></span>
+            </li>
             {% endfor %}
         </ul>
         {% endif %}

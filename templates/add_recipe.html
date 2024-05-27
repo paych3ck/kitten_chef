@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -75,7 +76,12 @@
             <div id="steps">
                 <div class="step">
                     <input type="text" name="step_title" placeholder="Название этапа">
-                    <input type="text" name="step_duration" placeholder="Длительность">
+                    <input type="number" name="timeAmount" class="numberInput" min="1" value="1">
+                    <select name="unit" class="unitDropdown">
+                        <option value="секунда">секунда</option>
+                        <option value="минута">минута</option>
+                        <option value="час">час</option>
+                    </select>
                     <textarea name="step_description" placeholder="Описание"></textarea>
                 </div>
             </div>

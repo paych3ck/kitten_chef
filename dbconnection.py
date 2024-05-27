@@ -1,26 +1,23 @@
-import mysql.connector
+from mysql.connector import pooling
 
 
 class DbConnection:
     def __init__(self, app):
-        self.host = app.config['DB_HOST']
-        self.database_name = app.config['DB_NAME']
-        self.user = app.config['DB_USER']
-        self.password = app.config['DB_PASS']
+        self.dbconfig = {
+            'host': app.config['DB_HOST'],
+            'database': app.config['DB_NAME'],
+            'user': app.config['DB_USER'],
+            'password': app.config['DB_PASS']
+        }
+
+        self.pool = pooling.MySQLConnectionPool(pool_size=10, **self.dbconfig)
 
     def connect(self):
-        self.connection = mysql.connector.connect(host=self.host,
-                                                  database=self.database_name,
-                                                  user=self.user,
-                                                  password=self.password)
-
-    def disconnect(self):
-        if self.connection:
-            self.connection.close()
+        return self.pool.get_connection()
 
     def add_note(self, user_id, type):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         INSERT INTO notes(user_id, type)
@@ -29,27 +26,27 @@ class DbConnection:
 
         cursor.execute(query, (user_id, type))
         note_id = cursor.lastrowid
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return note_id
 
     def add_post_detail(self, note_id, content):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         INSERT INTO posts(note_id, content)
         VALUES (%s, %s)'''
 
         cursor.execute(query, (note_id, content))
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def add_recipe_detail(self, note_id, recipe_name, ingredients, steps):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         INSERT INTO recipes(note_id, recipe_name, ingredients, steps)
@@ -57,13 +54,13 @@ class DbConnection:
         '''
 
         cursor.execute(query, (note_id, recipe_name, ingredients, steps))
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def add_message(self, data):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         INSERT INTO messages(sender_id, receiver_id, content, sent_at)
@@ -71,39 +68,39 @@ class DbConnection:
         '''
 
         cursor.execute(query, data)
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def add_like(self, user_id, note_id):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         INSERT INTO likes(user_id, note_id) VALUES (%s, %s)
         '''
 
         cursor.execute(query, (user_id, note_id))
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def add_comment(self, user_id, note_id, content):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         INSERT INTO comments(user_id, note_id, content) VALUES (%s, %s, %s)
         '''
 
         cursor.execute(query, (user_id, note_id, content))
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def get_comments_for_note(self, note_id):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         SELECT users.username, users.profile_picture,
@@ -116,27 +113,26 @@ class DbConnection:
 
         cursor.execute(query, (note_id,))
         res = cursor.fetchall()
-        self.connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return res
 
     def remove_like(self, user_id, note_id):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         DELETE FROM likes WHERE user_id = %s AND note_id = %s
         '''
 
         cursor.execute(query, (user_id, note_id))
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def add_user(self, data):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         INSERT INTO users(username, email, password_hash)
@@ -144,13 +140,13 @@ class DbConnection:
         '''
 
         cursor.execute(query, data)
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def has_like(self, user_id, note_id):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         SELECT COUNT(1)
@@ -161,12 +157,12 @@ class DbConnection:
         cursor.execute(query, (user_id, note_id))
         result = cursor.fetchone()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return result[0] > 0
 
     def has_favorite(self, user_id, note_id):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         SELECT COUNT(1)
@@ -177,39 +173,39 @@ class DbConnection:
         cursor.execute(query, (user_id, note_id))
         result = cursor.fetchone()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return result[0] > 0
 
     def add_favorite(self, user_id, note_id):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         INSERT INTO favorites (user_id, note_id) VALUES (%s, %s)
         '''
 
         cursor.execute(query, (user_id, note_id))
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def remove_favorite(self, user_id, note_id):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         DELETE FROM favorites WHERE user_id = %s AND note_id = %s
         '''
 
         cursor.execute(query, (user_id, note_id))
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def get_notes(self, user_id=None, notes=False,
                   likes=False, favorites=False):
-        self.connect()
-        cursor = self.connection.cursor(dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(dictionary=True)
 
         query = '''
         SELECT notes.*, users.username, users.profile_picture,
@@ -246,12 +242,12 @@ class DbConnection:
 
         res = cursor.fetchall()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return res
 
     def get_post_info(self, id):
-        self.connect()
-        cursor = self.connection.cursor(dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(dictionary=True)
 
         query = '''
         SELECT posts.content
@@ -263,12 +259,12 @@ class DbConnection:
         cursor.execute(query, (id, ))
         res = cursor.fetchone()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return res
 
     def get_recipe_info(self, id):
-        self.connect()
-        cursor = self.connection.cursor(dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(dictionary=True)
 
         query = '''
         SELECT recipes.recipe_name, recipes.ingredients, recipes.steps
@@ -280,12 +276,12 @@ class DbConnection:
         cursor.execute(query, (id, ))
         res = cursor.fetchone()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return res
 
     def get_messages_for_chat(self, user_id_1, user_id_2):
-        self.connect()
-        cursor = self.connection.cursor(dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(dictionary=True)
 
         query = '''
         SELECT m.message_id, m.sender_id,
@@ -306,12 +302,12 @@ class DbConnection:
         cursor.execute(query, (user_id_1, user_id_2, user_id_2, user_id_1))
         res = cursor.fetchall()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return res
 
     def get_chats_for_user_by_id(self, user_id):
-        self.connect()
-        cursor = self.connection.cursor(dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(dictionary=True)
 
         query = '''
         SELECT u.username AS chat_partner_username,
@@ -341,12 +337,12 @@ class DbConnection:
         cursor.execute(query, (user_id, user_id, user_id))
         res = cursor.fetchall()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return res
 
     def __get_post_by(self, column_name, value):
-        self.connect()
-        cursor = self.connection.cursor(buffered=True, dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(buffered=True, dictionary=True)
 
         query = f'''
         SELECT *
@@ -357,15 +353,15 @@ class DbConnection:
         cursor.execute(query, (value, ))
         res = cursor.fetchone()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return res
 
     def get_post_by_id(self, value):
         return self.__get_post_by('post_id', value)
 
     def __get_user_by(self, column_name, value):
-        self.connect()
-        cursor = self.connection.cursor(buffered=True, dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(buffered=True, dictionary=True)
 
         query = f'''
         SELECT *
@@ -374,10 +370,9 @@ class DbConnection:
         '''
 
         cursor.execute(query, (value, ))
-        self.connection.commit()
         res = cursor.fetchone()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return res
 
     def get_user_by_username(self, value):
@@ -390,8 +385,8 @@ class DbConnection:
         return self.__get_user_by('user_id', value)
 
     def update_user_password(self, email, password):
-        self.connect()
-        cursor = self.connection.cursor(buffered=True, dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(buffered=True, dictionary=True)
 
         query = '''
         UPDATE users
@@ -401,13 +396,13 @@ class DbConnection:
 
         values = (password, email)
         cursor.execute(query, values)
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def __update_user_info_by(self, id, column_name, value):
-        self.connect()
-        cursor = self.connection.cursor(buffered=True, dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(buffered=True, dictionary=True)
 
         query = f'''
         UPDATE users
@@ -417,9 +412,9 @@ class DbConnection:
 
         values = (value, id)
         cursor.execute(query, values)
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def update_user_username(self, id, value):
         return self.__update_user_info_by(id, 'username', value)
@@ -434,8 +429,8 @@ class DbConnection:
         return self.__update_user_info_by(id, 'profile_picture', value)
 
     def send_friend_request(self, user_id, friend_id):
-        self.connect()
-        cursor = self.connection.cursor(buffered=True, dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(buffered=True, dictionary=True)
 
         query = '''
         INSERT INTO user_friends(user_id, friend_id, status)
@@ -444,13 +439,13 @@ class DbConnection:
         '''
 
         cursor.execute(query, (user_id, friend_id))
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def confirm_friend_request(self, user_id, friend_id):
-        self.connect()
-        cursor = self.connection.cursor(buffered=True, dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(buffered=True, dictionary=True)
 
         confirm_query = '''
         UPDATE user_friends SET status = 'accepted'
@@ -466,13 +461,13 @@ class DbConnection:
         '''
 
         cursor.execute(reciprocal_query, (friend_id, user_id))
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def delete_friend(self, user_id, friend_id):
-        self.connect()
-        cursor = self.connection.cursor()
+        connection = self.connect()
+        cursor = connection.cursor()
 
         query = '''
         DELETE FROM user_friends
@@ -481,13 +476,13 @@ class DbConnection:
         '''
 
         cursor.execute(query, (user_id, friend_id, friend_id, user_id))
-        self.connection.commit()
+        connection.commit()
         cursor.close()
-        self.disconnect()
+        connection.close()
 
     def check_friendship_status(self, user_id, friend_id):
-        self.connect()
-        cursor = self.connection.cursor(buffered=True, dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(buffered=True, dictionary=True)
 
         query = '''
         SELECT status FROM user_friends
@@ -497,11 +492,12 @@ class DbConnection:
 
         cursor.execute(query, (user_id, friend_id, friend_id, user_id))
         result = cursor.fetchone()
+        connection.close()
         return 'not_friends' if result is None else result['status']
 
     def check_pending_invites(self, user_id):
-        self.connect()
-        cursor = self.connection.cursor(dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(dictionary=True)
 
         query = '''
         SELECT users.user_id, users.username,
@@ -514,12 +510,12 @@ class DbConnection:
         cursor.execute(query, (user_id,))
         pending_invites = cursor.fetchall()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return pending_invites
 
     def get_all_friends(self, user_id):
-        self.connect()
-        cursor = self.connection.cursor(dictionary=True)
+        connection = self.connect()
+        cursor = connection.cursor(dictionary=True)
 
         query = '''
         SELECT users.user_id, users.username,
@@ -535,5 +531,5 @@ class DbConnection:
         cursor.execute(query, (user_id, user_id, user_id))
         friends = cursor.fetchall()
         cursor.close()
-        self.disconnect()
+        connection.close()
         return friends

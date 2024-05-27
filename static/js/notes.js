@@ -62,36 +62,43 @@ document.querySelectorAll('.like-button').forEach(button => {
     };
 });
 
-
-
 document.addEventListener('DOMContentLoaded', function () {
     function loadComments(postDiv, noteId) {
         const commentsSection = postDiv.nextElementSibling;
+        const newCommentForm = commentsSection.nextElementSibling;
 
         fetch(`/get-comments/${noteId}`)
             .then(response => response.json())
             .then(comments => {
                 commentsSection.innerHTML = '';
 
-                comments.forEach((comment, index) => {
-                    const commentDiv = document.createElement('div');
-                    commentDiv.className = 'comment';
-                    let innerHTML = `
-                        <img class="comment-avatar" src="/uploads/avatars/${comment.avatar}">
-                        <div class="comment-body">
-                            <h5 class="comment-username">${comment.username}</h5>
-                            <p class="comment-date">${comment.timestamp}</p>
-                            <p class="comment-content">${comment.content}</p>
-                    `;
+                if (comments.length > 0) {
+                    comments.forEach((comment, index) => {
+                        const commentDiv = document.createElement('div');
+                        commentDiv.className = 'comment';
+                        let innerHTML = `
+                            <img class="comment-avatar" src="/uploads/avatars/${comment.avatar}">
+                            <div class="comment-body">
+                                <h5 class="comment-username">${comment.username}</h5>
+                                <p class="comment-date">${comment.timestamp}</p>
+                                <p class="comment-content">${comment.content}</p>
+                        `;
 
-                    if (index !== comments.length - 1) {
-                        innerHTML += '<hr>';
-                    }
+                        if (index !== comments.length - 1) {
+                            innerHTML += '<hr>';
+                        }
 
-                    innerHTML += `</div>`;
-                    commentDiv.innerHTML = innerHTML;
-                    commentsSection.appendChild(commentDiv);
-                });
+                        innerHTML += `</div>`;
+                        commentDiv.innerHTML = innerHTML;
+                        commentsSection.appendChild(commentDiv);
+                    });
+
+                    commentsSection.style.display = 'block';
+                } else {
+                    commentsSection.style.display = 'none';
+                }
+
+                newCommentForm.style.display = 'block';
             });
     }
 
@@ -112,7 +119,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     const commentDiv = document.createElement('div');
                     commentDiv.className = 'comment';
                     commentDiv.innerHTML = `
-                        <hr>
                         <img class="comment-avatar" src="/uploads/avatars/${comment.profile_picture}">
                         <div class="comment-body">
                             <h5 class="comment-username">${comment.username}</h5>
@@ -120,7 +126,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             <p class="comment-content">${comment.content}</p>
                         </div>
                     `;
-                    commentsSection.appendChild(commentDiv);
+                    if (commentsSection.children.length > 0) {
+                        commentsSection.appendChild(document.createElement('hr'));
+                        commentsSection.appendChild(commentDiv);
+                    } else {
+                        commentsSection.innerHTML = '';
+                        commentsSection.appendChild(commentDiv);
+                        commentsSection.style.display = 'block';
+                    }
                     commentInput.value = '';
                 } else {
                     alert('Ошибка при добавлении комментария: ' + comment.error);
@@ -129,28 +142,35 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Ошибка:', error));
     }
 
-
     function toggleComments(event) {
-        const postDiv = event.target.closest('.note');
+        const button = event.currentTarget;
+        const postDiv = button.closest('.note');
         const commentsSection = postDiv.nextElementSibling;
         const newCommentForm = commentsSection.nextElementSibling;
-        const noteId = this.dataset.noteId;
+        const noteId = button.dataset.noteId;
 
-        const isCommentsShown = commentsSection.style.display === 'block';
-        commentsSection.style.display = isCommentsShown ? 'none' : 'block';
-        newCommentForm.style.display = isCommentsShown ? 'none' : 'block';
+        // if (!commentsSection || !newCommentForm) {
+        //     console.error('Comments section or new comment form not found');
+        //     return;
+        // }
 
-        loadComments(postDiv, noteId);
+        if (commentsSection.style.display === 'block') {
+            commentsSection.style.display = 'none';
+            newCommentForm.style.display = 'none';
+        } else {
+            loadComments(postDiv, noteId);
+        }
     }
 
     function showAddedComment(event) {
         event.preventDefault();
-        const newCommentFormDiv = event.target.closest('.new-comment-form')
-        const commentInput = newCommentFormDiv.querySelector('.new-comment-input')
+        const button = event.currentTarget;
+        const newCommentFormDiv = button.closest('.new-comment-form');
+        const commentInput = newCommentFormDiv.querySelector('.new-comment-input');
         const commentsSection = newCommentFormDiv.previousElementSibling;
-        const noteId = this.dataset.noteId;
+        const noteId = button.dataset.noteId;
 
-        addComment(commentsSection, noteId, commentInput)
+        addComment(commentsSection, noteId, commentInput);
     }
 
     document.querySelectorAll('.toggle-comments-btn').forEach(button => {
@@ -158,6 +178,70 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.querySelectorAll('.submit-comment-btn').forEach(button => {
-        button.addEventListener('click', showAddedComment)
-    })
+        button.addEventListener('click', showAddedComment);
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.start-timer-btn');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            const durationText = button.getAttribute('data-duration');
+            const timerDisplay = button.nextElementSibling;
+
+            let duration = parseDuration(durationText);
+            startTimer(duration, timerDisplay);
+        });
+    });
+
+    function parseDuration(durationText) {
+        let duration = 0;
+        const parts = durationText.split(' ');
+
+        if (parts.length === 2) {
+            const value = parseInt(parts[0]);
+            const unit = parts[1].toLowerCase();
+
+            if (['секунда', 'секунды', 'секунд'].some(u => unit.includes(u))) {
+                duration = value;
+            } else if (['минута', 'минуты', 'минут'].some(u => unit.includes(u))) {
+                duration = value * 60;
+            } else if (['час', 'часа', 'часов'].some(u => unit.includes(u))) {
+                duration = value * 3600;
+            }
+        }
+        return duration;
+    }
+
+    function getCorrectForm(number, forms) {
+        if (number % 10 === 1 && number % 100 !== 11) {
+            return forms[0];
+        } else if ([2, 3, 4].includes(number % 10) && ![12, 13, 14].includes(number % 100)) {
+            return forms[1];
+        } else {
+            return forms[2];
+        }
+    }
+
+    function startTimer(duration, display) {
+        let timer = duration;
+        const interval = setInterval(() => {
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+
+            const minuteForms = ['минута', 'минуты', 'минут'];
+            const secondForms = ['секунда', 'секунды', 'секунд'];
+
+            const minuteText = getCorrectForm(minutes, minuteForms);
+            const secondText = getCorrectForm(seconds, secondForms);
+
+            display.textContent = `${minutes} ${minuteText} ${seconds} ${secondText}`;
+
+            if (--timer < 0) {
+                clearInterval(interval);
+                display.textContent = 'Время истекло';
+            }
+        }, 1000);
+    }
 });

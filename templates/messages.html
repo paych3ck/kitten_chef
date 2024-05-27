@@ -12,16 +12,26 @@
 
 <body>
     {% include 'base_header.html' %}
+    {% if chats|length > 0 %}
     <div class="chat-list">
         {% for chat in chats %}
         <a class="chat-block" href="{{ url_for('chat', chat_username=chat.chat_partner_username) }}">
             <img src="{{ url_for('uploaded_file', filename='avatars/' + chat.chat_partner_avatar) }}" class="avatar">
             <div class="chat-info">
-                <span class="username">{{ chat.chat_partner_username }}</span>
-                <span class="last-message">{{ chat.last_message_text }}</span>
+                <div class="message-details">
+                    <span class="username">{{ chat.chat_partner_username }}</span>
+                    <span class="last-message">{{ chat.last_message_text }}</span>
+                </div>
+                <span class="last-message-time">{{ convert_datetime_in_chat(chat.last_message_sent_at) }}</span>
             </div>
         </a>
         {% endfor %}
     </div>
+    {% else %}
+    <img src="{{ url_for('static', filename='images/kitten_not_friends.png') }}">
+    <div class="name-container">
+        <h1>У Вас пока нет друзей...</h1>
+    </div>
+    {% endif %}
     </ul>
 </body>
