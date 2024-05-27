@@ -13,7 +13,8 @@ body {
 }
 
 .post-button,
-.recipe-button {
+.recipe-button,
+.video-recipe-button {
     border: 5px solid #a46744;
     background-color: #e6b998;
     color: #58331d;

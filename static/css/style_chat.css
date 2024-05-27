@@ -43,13 +43,18 @@ select {
 }
 
 #chat-wrap {
-    background-color: #eea77e;
-    margin: 15px 0;
+    /* background-color: #eea77e; */
+    margin: 0 auto;
     padding: 15px;
+    width: 70%;
+    border-radius: 20px;
+    border: 10px solid rgb(107, 59, 21);
+    background-color: #a46744;
 }
 
 #chat .msg {
     margin-bottom: 15px;
+    background-color: #eed8bf;
 }
 
 #chat .msg.msg__service {
@@ -102,24 +107,19 @@ textarea {
 }
 
 .sender-username {
-    font-weight: bold;
-    margin-bottom: 5px;
+    display: block;
+    color: #6f6e6c;
+    font-size: 20px;
+    text-decoration: none;
 }
 
 .sent-at {
     font-size: 0.8em;
-    color: #999;
+    color: #000000;
 }
 
 .message-content {
     margin-top: 5px;
-}
-
-.sender-username {
-    font-weight: bold;
-    margin-bottom: 5px;
-    text-decoration: none;
-    color: #007bff;
 }
 
 .sender-username:hover {

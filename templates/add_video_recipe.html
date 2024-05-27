@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KittenChef - добавление видео-рецепта</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/variables.css') }}">
+    <link href="{{ url_for('static', filename='css/style_header.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style_add_note.css') }}" rel="stylesheet">
+</head>
+
+<body>
+    {% include 'base_header.html' %}
+    <div class="container">
+        <div class="header-container">
+            <h1 class="header">Добавление видео-рецепта</h1>
+        </div>
+        <div class="header-container">
+            <h2>
+                Видео-рецепты позволяют наглядно показать процесс приготовления блюд, делая акцент на каждом этапе,
+                времени и техниках.
+            </h2>
+        </div>
+        <div class="info-container">
+            <ul>
+                <li>
+                    <b>Ясное название:</b> Название видео-рецепта должно быть точным и ясным, чтобы сразу дать
+                    представление о блюде.
+                </li>
+                <li>
+                    <b>Видео процесс:</b> Запишите весь процесс приготовления в одном видео, включая все ключевые
+                    моменты и советы.
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <form method="POST" action="/add_video_recipe" enctype="multipart/form-data">
+            <h2>Название</h2>
+            <div class="recipe-input">
+                <input type="text" name="recipe_name" placeholder="Название рецепта" required>
+            </div>
+            <br>
+            <h2>Видео</h2>
+            <div class="recipe-input">
+                <input type="file" name="recipe_video" accept="video/*" required>
+            </div>
+            <br>
+            <div class="input-element">
+                <input class="button-action" type="submit" value="Опубликовать">
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

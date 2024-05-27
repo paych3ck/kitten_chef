@@ -22,11 +22,23 @@
             <h3>{{ step.title }}</h3>
             <li>
                 <span>{{ step.duration }} - {{ step.description }}</span>
-                <button class="start-timer-btn" data-duration="{{ step.duration }}">Запустить таймер</button>
+                {% if current_user.is_premium %}
+                <button class="start-timer-btn" data-duration="{{ step.duration }}">
+                    <img src="{{ url_for('static', filename='images/play_button.svg') }}" alt="Запустить таймер" />
+                </button>
                 <span class="timer-display"></span>
+                {% endif %}
             </li>
             {% endfor %}
         </ul>
+        {% elif note.type == 'video_recipe' %}
+        {% if current_user.is_premium %}
+        <video controls class="note-video">
+            <source src="{{ note.video_url }}" type="video/mp4">
+        </video>
+        {% else %}
+        <h1 class="recipe-name">Данный видео-рецепт доступен только пользователям с премиум-подпиской.</h1>
+        {% endif %}
         {% endif %}
 
         <button class="like-button" data-note-id="{{ note.note_id }}"

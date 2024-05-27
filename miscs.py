@@ -55,6 +55,10 @@ def process_notes(db, notes, user_id):
             recipe_data['steps'] = json.loads(recipe_data['steps'])
             note.update(recipe_data)
 
+        elif note['type'] == 'video_recipe':
+            video_recipe_data = db.get_video_recipe_info(note['note_id'])
+            note.update(video_recipe_data)
+
     return notes
 
 

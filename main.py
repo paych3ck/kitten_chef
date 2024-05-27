@@ -79,6 +79,8 @@ def register():
         msg = Message('Добро пожаловать!', recipients=[email], html=html_body)
         mail.send(msg)
 
+        cache.delete('view/%s' % url_for('feed'))
+
         return redirect(url_for('login'))
 
     return render_template('register.html', register_form=register_form)
@@ -95,6 +97,9 @@ def login():
                                              login_form.password.data):
             userlogin = User(user_data)
             login_user(userlogin)
+
+            cache.delete('view/%s' % url_for('feed'))
+
             return redirect(url_for('feed'))
 
         flash('Ошибка авторизации!', category='error')
@@ -278,6 +283,29 @@ def add_recipe():
         return redirect(url_for('feed'))
 
     return render_template('add_recipe.html')
+
+
+@application.route('/add_video_recipe', methods=['GET', 'POST'])
+@login_required
+def add_video_recipe():
+    if request.method == 'POST':
+        recipe_name = request.form['recipe_name']
+        file = request.files['recipe_video']
+
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(application.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+
+        video_url = file_path
+
+        user_id = current_user.id
+        note_id = db.add_note(user_id, 'video_recipe')
+        db.add_video_recipe_detail(note_id, recipe_name, video_url)
+        cache.delete('view/%s' % url_for('feed'))
+
+        return redirect(url_for('feed'))
+
+    return render_template('add_video_recipe.html')
 
 
 @application.route('/friends', methods=['GET', 'POST'])

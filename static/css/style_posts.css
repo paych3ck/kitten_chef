@@ -1,3 +1,29 @@
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    position: relative;
+    padding-left: 20px;
+}
+
+li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    font-size: 1.5em;
+    color: #eed8bf;
+}
+
+li img {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 .note {
     border: 10px solid rgb(107, 59, 21);
     background-color: #a46744;
@@ -6,6 +32,13 @@
     margin: 20px auto;
     max-width: 60%;
     border-radius: 40px;
+}
+
+.note-video {
+    width: 100%;
+    height: auto;
+    border-radius: 40px;
+    /* Чтобы совпадало с элементом note */
 }
 
 .notes-container {}
@@ -153,4 +186,18 @@ hr {
 
 .stat {
     color: #EED8BF
+}
+
+.start-timer-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.start-timer-btn img {
+    width: 24px;
+    /* задайте нужный размер */
+    height: 24px;
+    /* задайте нужный размер */
 }

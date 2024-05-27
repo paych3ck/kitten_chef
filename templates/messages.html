@@ -28,9 +28,11 @@
         {% endfor %}
     </div>
     {% else %}
-    <img src="{{ url_for('static', filename='images/kitten_not_friends.png') }}">
-    <div class="name-container">
-        <h1>У Вас пока нет друзей...</h1>
+    <div class="no-friends-container">
+        <img src="{{ url_for('static', filename='images/kitten_not_friends.png') }}" class="no-friends-image">
+        <div class="name-container">
+            <h1>У Вас пока нет сообщений...</h1>
+        </div>
     </div>
     {% endif %}
     </ul>

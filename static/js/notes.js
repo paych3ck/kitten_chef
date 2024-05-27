@@ -99,6 +99,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 newCommentForm.style.display = 'block';
+
+                postDiv.dataset.commentsLoaded = 'true';
             });
     }
 
@@ -149,16 +151,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const newCommentForm = commentsSection.nextElementSibling;
         const noteId = button.dataset.noteId;
 
-        // if (!commentsSection || !newCommentForm) {
-        //     console.error('Comments section or new comment form not found');
-        //     return;
-        // }
-
-        if (commentsSection.style.display === 'block') {
+        if (commentsSection.style.display === 'block' || newCommentForm.style.display === 'block') {
             commentsSection.style.display = 'none';
             newCommentForm.style.display = 'none';
         } else {
-            loadComments(postDiv, noteId);
+            if (postDiv.dataset.commentsLoaded === 'true') {
+                commentsSection.style.display = commentsSection.innerHTML ? 'block' : 'none';
+                newCommentForm.style.display = 'block';
+            } else {
+                loadComments(postDiv, noteId);
+            }
         }
     }
 
@@ -191,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const timerDisplay = button.nextElementSibling;
 
             let duration = parseDuration(durationText);
-            startTimer(duration, timerDisplay);
+            startTimer(duration, timerDisplay, button);
         });
     });
 
@@ -224,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function startTimer(duration, display) {
+    function startTimer(duration, display, button) {
         let timer = duration;
         const interval = setInterval(() => {
             const minutes = Math.floor(timer / 60);
@@ -236,11 +238,17 @@ document.addEventListener('DOMContentLoaded', function () {
             const minuteText = getCorrectForm(minutes, minuteForms);
             const secondText = getCorrectForm(seconds, secondForms);
 
+            button.innerHTML = `<img src="/static/images/play_button.svg" alt="Перезапустить таймер" />`;
             display.textContent = `${minutes} ${minuteText} ${seconds} ${secondText}`;
 
             if (--timer < 0) {
                 clearInterval(interval);
                 display.textContent = 'Время истекло';
+                button.innerHTML = `<img src="/static/images/replay_button.svg" alt="Перезапустить таймер" />`;
+                button.onclick = () => {
+                    let duration = parseDuration(button.getAttribute('data-duration'));
+                    startTimer(duration, display, button);
+                };
             }
         }, 1000);
     }

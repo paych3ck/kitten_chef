@@ -122,3 +122,19 @@ img {
     width: 800px;
     height: 800px;
 }
+
+.no-friends-image {
+    width: 45%;
+    height: 45%;
+}
+
+.no-friends-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh; */
+    /* Задает высоту контейнера равную высоте экрана */
+    text-align: center;
+    /* Центрирует текст */
+}

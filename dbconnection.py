@@ -58,6 +58,19 @@ class DbConnection:
         cursor.close()
         connection.close()
 
+    def add_video_recipe_detail(self, note_id, recipe_name, video_url):
+        connection = self.connect()
+        cursor = connection.cursor()
+
+        query = '''
+        INSERT INTO video_recipes(note_id, recipe_name, video_url)
+        VALUES (%s, %s, %s)'''
+
+        cursor.execute(query, (note_id, recipe_name, video_url))
+        connection.commit()
+        cursor.close()
+        connection.close()
+
     def add_message(self, data):
         connection = self.connect()
         cursor = connection.cursor()
@@ -271,6 +284,23 @@ class DbConnection:
         FROM notes
         LEFT JOIN recipes ON notes.note_id = recipes.note_id
         WHERE notes.type = 'recipe' AND notes.note_id = %s
+        '''
+
+        cursor.execute(query, (id, ))
+        res = cursor.fetchone()
+        cursor.close()
+        connection.close()
+        return res
+
+    def get_video_recipe_info(self, id):
+        connection = self.connect()
+        cursor = connection.cursor(dictionary=True)
+
+        query = '''
+        SELECT video_recipes.recipe_name, video_recipes.video_url
+        FROM notes
+        LEFT JOIN video_recipes ON notes.note_id = video_recipes.note_id
+        WHERE notes.type = 'video_recipe' AND notes.note_id = %s
         '''
 
         cursor.execute(query, (id, ))

@@ -70,3 +70,19 @@ body {
     margin-left: 10px;
     flex-shrink: 0;
 }
+
+.no-friends-image {
+    width: 41%;
+    height: 41%;
+}
+
+.no-friends-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh; */
+    /* Задает высоту контейнера равную высоте экрана */
+    text-align: center;
+    /* Центрирует текст */
+}

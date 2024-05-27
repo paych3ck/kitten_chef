@@ -18,6 +18,11 @@
         <a href="add_recipe">
             <button class="recipe-button">НОВЫЙ РЕЦЕПТ</button>
         </a>
+        {% if current_user.is_premium %}
+        <a href="add_video_recipe">
+            <button class="video-recipe-button">НОВЫЙ ВИДЕО-РЕЦЕПТ</button>
+        </a>
+        {% endif %}
     </div>
 
     {% include 'posts.html' %}
