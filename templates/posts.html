@@ -7,6 +7,9 @@
         <span class="note-info">{{ convert_datetime_in_feed(note.created_at) }}</span>
         {% if note.type == 'post' %}
         <p class="post-content">{{ note.content }}</p>
+        {% if note.image_path != 'None' %}
+        <img src="{{ url_for('uploaded_file', filename=note.image_path) }}" class="note-image">
+        {% endif %}
         {% elif note.type == 'recipe' %}
         <h1 class="recipe-name"> {{ note.recipe_name }}</h1>
         <h2 class="recipe-headers">Ингредиенты</h2>
@@ -31,10 +34,16 @@
             </li>
             {% endfor %}
         </ul>
+        {% if note.image_path != 'None' %}
+        <h2 class="recipe-headers">Результат</h2>
+        <img src="{{ url_for('uploaded_file', filename=note.image_path) }}" class="note-image">
+        {% endif %}
+
         {% elif note.type == 'video_recipe' %}
         {% if current_user.is_premium %}
+        <h1 class="recipe-name"> {{ note.recipe_name }}</h1>
         <video controls class="note-video">
-            <source src="{{ note.video_url }}" type="video/mp4">
+            <source src="{{ url_for('uploaded_file', filename=note.video_url) }}" type="video/mp4">
         </video>
         {% else %}
         <h1 class="recipe-name">Данный видео-рецепт доступен только пользователям с премиум-подпиской.</h1>
@@ -67,7 +76,8 @@
 
     <div class="new-comment-form" style="display: none;">
         <div class="new-comment-input-div">
-            <textarea class="new-comment-input" placeholder="Напишите комментарий..."></textarea>
+            <textarea rows="4" wrap="hard" maxlength="240" class="new-comment-input"
+                placeholder="Напишите комментарий..."></textarea>
         </div>
         <button class="submit-comment-btn" data-note-id="{{ note.note_id }}">Добавить комментарий</button>
     </div>

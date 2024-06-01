@@ -34,6 +34,10 @@
             {{ user_settings_form.profile_picture.label }}
             <input type="file" id="profile_picture" name="profile_picture">
             <hr />
+            <div class="change-password-link">
+                <a href="{{ url_for('change_password') }}">Изменить пароль</a>
+            </div>
+            <hr />
             <br>
             {{ user_settings_form.submit(class_='button-action') }}
         </form>

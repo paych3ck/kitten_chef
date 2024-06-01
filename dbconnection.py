@@ -31,29 +31,32 @@ class DbConnection:
         connection.close()
         return note_id
 
-    def add_post_detail(self, note_id, content):
+    def add_post_detail(self, note_id, content, image_path):
         connection = self.connect()
         cursor = connection.cursor()
 
         query = '''
-        INSERT INTO posts(note_id, content)
-        VALUES (%s, %s)'''
+        INSERT INTO posts(note_id, content, image_path)
+        VALUES (%s, %s, %s)'''
 
-        cursor.execute(query, (note_id, content))
+        cursor.execute(query, (note_id, content, image_path))
         connection.commit()
         cursor.close()
         connection.close()
 
-    def add_recipe_detail(self, note_id, recipe_name, ingredients, steps):
+    def add_recipe_detail(self, note_id, recipe_name,
+                          ingredients, steps, image_path):
         connection = self.connect()
         cursor = connection.cursor()
 
         query = '''
-        INSERT INTO recipes(note_id, recipe_name, ingredients, steps)
-        VALUES(%s, %s, %s, %s)
+        INSERT INTO recipes(note_id, recipe_name,
+                            ingredients, steps, image_path)
+        VALUES(%s, %s, %s, %s, %s)
         '''
 
-        cursor.execute(query, (note_id, recipe_name, ingredients, steps))
+        cursor.execute(query, (note_id, recipe_name,
+                       ingredients, steps, image_path))
         connection.commit()
         cursor.close()
         connection.close()
@@ -263,7 +266,7 @@ class DbConnection:
         cursor = connection.cursor(dictionary=True)
 
         query = '''
-        SELECT posts.content
+        SELECT posts.content, posts.image_path
         FROM notes
         LEFT JOIN posts ON notes.note_id = posts.note_id
         WHERE notes.type = 'post' AND notes.note_id = %s
@@ -280,7 +283,8 @@ class DbConnection:
         cursor = connection.cursor(dictionary=True)
 
         query = '''
-        SELECT recipes.recipe_name, recipes.ingredients, recipes.steps
+        SELECT recipes.recipe_name, recipes.ingredients,
+        recipes.steps, recipes.image_path
         FROM notes
         LEFT JOIN recipes ON notes.note_id = recipes.note_id
         WHERE notes.type = 'recipe' AND notes.note_id = %s

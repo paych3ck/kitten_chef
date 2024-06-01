@@ -1,103 +1,136 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>KittenChef - премиум</title>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}"/>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-16x16.png') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_header.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style_premium.css') }}">
 </head>
+
 <body>
     {% include 'base_header.html' %}
     <div class="container">
         <div class="header-container">
-           <h1>
-            Станьте Премиум-пользователем KittenChef!
-           </h1> 
-        </div>  
+            <h1>
+                Станьте Премиум-пользователем KittenChef!
+            </h1>
+        </div>
         <div class="header-container">
             <h2>
-                Премиум-подписка открывает новые горизонты для вашего кулинарного творчества и общения в мире гастрономов. Поднимите свой опыт в KittenChef на невиданный уровень!
+                Премиум-подписка открывает новые горизонты для вашего кулинарного творчества и общения в мире
+                гастрономов. Поднимите свой опыт в KittenChef на невиданный уровень!
             </h2>
         </div>
         <div class="info-container">
             <ul>
                 <li>
-                    <b>Выразите свою индивидуальность:</b> ваш ник — это больше, чем просто имя. Это отражение вашего кулинарного духа, ваших предпочтений и стиля. С премиум-подпиской, вы можете менять его по желанию, подчёркивая свою уникальность.
-                </li>
-                <li>
-                    <b>Больше места для коллекций рецептов:</b> в то время как обычные пользователи ограничены двумя альбомами, VIP-пользователи могут создавать неограниченное количество альбомов для своих коллекций.
+                    <b>Выразите свою индивидуальность:</b> ваш ник — это больше, чем просто имя. Это отражение вашего
+                    кулинарного духа, ваших предпочтений и стиля. С премиум-подпиской, вы можете менять его по желанию,
+                    подчёркивая свою уникальность.
                 </li>
                 <li>
                     <b>Видеорецепты:</b> возможность загружать и просматривать видеорецепты.
                 </li>
                 <li>
-                    <b>Приоритетная поддержка:</b> VIP-пользователи получают приоритет при обращении в службу поддержки.
+                    <b>Таймер:</b> используйте встроенный таймер для точного отслеживания времени выполнения каждого
+                    этапа рецепта. Больше не нужно отвлекаться на другие устройства — всё, что вам нужно, уже есть в
+                    нашем приложении.
                 </li>
                 <li>
-                    <b>Эксклюзивность и приватность:</b> публикуйте контент, который будет виден только выбранной аудитории. Это ваш шанс поделиться особыми рецептами или экспериментами на кухне, которые предназначены для самых преданных поклонников и единомышленников.
+                    <b>Приоритетная поддержка:</b> VIP-пользователи получают приоритет при обращении в службу поддержки.
                 </li>
-            </ul> 
+            </ul>
         </div>
         <div class="header-container">
             <h2>
-                Подписка на Премиум – это не просто дополнительные функции. Это ваш шаг к расширению кулинарных горизонтов, общению с единомышленниками и погружению в мир кулинарии без ограничений.
+                Подписка на Премиум – это не просто дополнительные функции. Это ваш шаг к расширению кулинарных
+                горизонтов, общению с единомышленниками и погружению в мир кулинарии без ограничений.
                 Приглашаем вас присоединиться к премиальному сообществу KittenChef уже сегодня!
             </h2>
         </div>
     </div>
-    <!-- <div class="button-container">
-        <input class="submit" value="КУПИТЬ ПРЕМИУМ" type="button">
-    </div> -->
     <div class="buttons-container">
         <div class="buybutton-container">
             <div class="text">
-                <b>12 месяцев</b>
-            <br>
-            </div>
-            <div class="text">
-                Скидка 50%
+                <b>1 месяц</b>
                 <br>
             </div>
             <div class="text">
-                <s>1260</s> &nbsp 960
+                Скидка
+                <br>
+            </div>
+            <div class="text">
+                <s>150</s> &nbsp 130
             </div>
             <div class="button-container">
-                <input class="submit" value="КУПИТЬ ПРЕМИУМ 12 МЕС." type="button">
+                <input class="submit" value="КУПИТЬ ПРЕМИУМ 1 МЕС." type="button"
+                    onclick="showModal('1 месяц', '130 руб.')">
+            </div>
+        </div>
+        <div class="buybutton-container">
+            <div class="text">
+                <b>6 месяцев</b>
+                <br>
+            </div>
+            <div class="text">
+                Скидка
+                <br>
+            </div>
+            <div class="text">
+                <s>900</s> &nbsp 780
+            </div>
+            <div class="button-container">
+                <input class="submit" value="КУПИТЬ ПРЕМИУМ 6 МЕС." type="button"
+                    onclick="showModal('6 месяцев', '780 руб.')">
             </div>
         </div>
         <div class="buybutton-container">
             <div class="text">
                 <b>12 месяцев</b>
-            <br>
-            </div>
-            <div class="text">
-                Скидка 50%
                 <br>
             </div>
             <div class="text">
-                <s>1260</s> &nbsp 960
-            </div>
-            <div class="button-container">
-                <input class="submit" value="КУПИТЬ ПРЕМИУМ 12 МЕС." type="button">
-            </div>
-        </div>
-        <div class="buybutton-container">
-            <div class="text">
-                <b>12 месяцев</b>
-            <br>
-            </div>
-            <div class="text">
-                Скидка 50%
+                Скидка
                 <br>
             </div>
             <div class="text">
-                <s>1260</s> &nbsp 960
+                <s>1800</s> &nbsp 1560
             </div>
             <div class="button-container">
-                <input class="submit" value="КУПИТЬ ПРЕМИУМ 12 МЕС." type="button">
+                <input class="submit" value="КУПИТЬ ПРЕМИУМ 12 МЕС." type="button"
+                    onclick="showModal('12 месяцев', '1560 руб.')">
             </div>
         </div>
     </div>
+
+    <!-- Модальное окно -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <p id="modalPrice"></p>
+            <p id="modalInsturctions">Для покупки премиум-подписки, пожалуйста, следуйте инструкции:</p>
+            <ol>
+                <li>Совершите перевод на указанные реквизиты: <br>
+                    <b>Банк:</b> [Название банка] <br>
+                    <b>Счет:</b> 1234567890 <br>
+                    <b>БИК:</b> 123456 <br>
+                    <b>Получатель:</b> ООО "KittenChef" <br>
+                    <b>Назначение платежа:</b> Премиум подписка на <span id="paymentPeriod"></span>
+                </li>
+                <li>После совершения платежа, отправьте чек на нашу почту: <b>help@kittenchef.ru</b></li>
+                <li>В письме укажите ваш логин на KittenChef.</li>
+            </ol>
+            <p id="modalInsturctions">После проверки оплаты, ваша премиум-подписка будет активирована.</p>
+            <div class="button-container">
+                <button onclick="closeModal()">Понятно</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/premium_modal_info.js') }}"></script>
 </body>
+
 </html>

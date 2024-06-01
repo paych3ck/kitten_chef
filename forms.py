@@ -47,3 +47,15 @@ class UserSettingsForm(FlaskForm):
     status = StringField('Статус:')
     profile_picture = FileField('Аватар (изображение):')
     submit = SubmitField('Сохранить изменения')
+
+
+class ChangePasswordForm(FlaskForm):
+    old_password = PasswordField('Старый пароль:', validators=[
+                                 DataRequired(), Length(max=15)])
+    new_password = PasswordField('Новый пароль:', validators=[
+                                 DataRequired(), Length(max=15)])
+    confirm_new_password = PasswordField(
+        'Подтвердите новый пароль:',
+        validators=[DataRequired(),
+                    Length(max=15)])
+    submit = SubmitField('Изменить пароль')

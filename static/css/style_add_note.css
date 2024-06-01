@@ -88,6 +88,7 @@ li {
     font-size: 16px;
     font-weight: bold;
     border: 3px solid rgb(87, 48, 16);
+    margin-bottom: 5px;
 }
 
 .button-mini:hover {
@@ -118,7 +119,8 @@ li {
 .step {
     display: flex;
     align-items: flex-start;
-    gap: 5px;
+    margin-bottom: 5px;
+    gap: 0px;
 }
 
 .step input[type="text"] {
@@ -173,7 +175,7 @@ li {
     display: flex;
 }
 
-.input-image {
+.file-input {
     display: block;
     width: 95%;
     margin: auto;
@@ -182,5 +184,34 @@ li {
     border: none;
     border-radius: 20px;
     background: var(--main-bg-color);
+    margin-top: 5px;
     /* opacity: var(--input-bg-opacity); */
+}
+
+.numberInput {
+    width: 10%;
+    height: 50px;
+    border: 3px solid var(--main-bg-color);
+    border-radius: 20px;
+    background-color: #cb8b66;
+    color: #EED8BF;
+    font-size: 20px;
+    text-align: center;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.numberInput::placeholder {
+    color: #EED8BF;
+}
+
+.unitDropdown {
+    width: 15%;
+    height: 58px;
+    border: 3px solid var(--main-bg-color);
+    border-radius: 20px;
+    background-color: #cb8b66;
+    color: #EED8BF;
+    font-size: 20px;
+    margin-right: 5px;
 }

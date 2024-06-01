@@ -71,7 +71,7 @@ def process_recipe(recipe_form):
 
     step_titles = recipe_form.getlist('step_title')
     step_time_amounts = recipe_form.getlist('timeAmount')
-    step_time_units = recipe_form.getlist('unit')
+    step_time_units = recipe_form.getlist('unit_text')
     step_durations = [f'{num} {unit}' for num,
                       unit in zip(step_time_amounts, step_time_units)]
     step_descriptions = recipe_form.getlist('step_description')

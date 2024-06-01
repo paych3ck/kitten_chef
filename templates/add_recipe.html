@@ -29,24 +29,19 @@
                     блюде.
                 </li>
                 <li>
-                    Список ингредиентов: Перечислите все необходимые ингредиенты с указанием точных мер и количества.
+                    <b>Список ингредиентов:</b> Перечислите все необходимые ингредиенты с указанием точных мер и
+                    количества.
                     Это
                     поможет пользователям легко подготовиться к приготовлению.
                 </li>
                 <li>
-                    Пошаговое приготовление: Описывайте каждый шаг приготовления максимально детально. Указывайте
+                    <b>Пошаговое приготовление:</b> Описывайте каждый шаг приготовления максимально детально. Указывайте
                     временные
                     рамки, температуру и техники, необходимые для идеального результата.
                 </li>
                 <li>
-                    Фотографии процесса и результатов: Иллюстрируйте ключевые моменты приготовления и конечный результат
-                    блюда
-                    фотографиями. Это не только сделает рецепт привлекательнее, но и поможет пользователям правильно
-                    следовать
-                    инструкциям.
-                </li>
-                <li>
-                    Личное прикосновение: Не забудьте добавить комментарии или советы, основанные на вашем личном опыте
+                    <b>Личное прикосновение:</b> Не забудьте добавить комментарии или советы, основанные на вашем личном
+                    опыте
                     приготовления. Это может быть секретный ингредиент или предложение по альтернативным способам
                     приготовления.
                 </li>
@@ -58,14 +53,14 @@
         <form method="POST" action="/add_recipe" enctype="multipart/form-data">
             <h2>Название</h2>
             <div class="recipe-input">
-                <input type="text" name="recipe_name" placeholder="Название рецепта">
+                <input type="text" name="recipe_name" placeholder="Название рецепта" required>
             </div>
             <br>
             <h2>Ингредиенты</h2>
             <div id="ingredients">
                 <div class="ingredient">
-                    <input type="text" name="ingredient_name" placeholder="Название ингредиента">
-                    <input type="text" name="ingredient_amount" placeholder="Количество">
+                    <input type="text" name="ingredient_name" placeholder="Название ингредиента" required>
+                    <input type="text" name="ingredient_amount" placeholder="Количество" required>
                 </div>
             </div>
             <br>
@@ -75,19 +70,23 @@
             <h2>Этапы приготовления</h2>
             <div id="steps">
                 <div class="step">
-                    <input type="text" name="step_title" placeholder="Название этапа">
-                    <input type="number" name="timeAmount" class="numberInput" min="1" value="1">
-                    <select name="unit" class="unitDropdown">
+                    <input type="text" name="step_title" placeholder="Название этапа" required>
+                    <input type="number" name="timeAmount" class="numberInput" min="1" value="1" required>
+                    <select name="unit" class="unitDropdown" required>
                         <option value="секунда">секунда</option>
                         <option value="минута">минута</option>
                         <option value="час">час</option>
                     </select>
-                    <textarea name="step_description" placeholder="Описание"></textarea>
+                    <input type="hidden" name="unit_text" class="unit_text">
+                    <textarea name="step_description" placeholder="Описание" required></textarea>
                 </div>
             </div>
             <br>
             <button class="button-mini" type="button" onclick="addStep()">Добавить этап</button>
 
+            <br>
+            <h2>Загрузите изображение</h2>
+            <input type="file" name="recipe_image" class="file-input" accept="image/*">
             <br>
             <div class="input-element">
                 <input class="button-action" type="submit" value="Опубликовать">

@@ -21,16 +21,16 @@
             {{ register_form.csrf_token }}
 
             {{ register_form.username.label }}
-            {{ register_form.username() }}
+            {{ register_form.username(placeholder="Не более 10 символов") }}
 
             {{ register_form.email.label }}
             {{ register_form.email() }}
 
             {{ register_form.password.label }}
-            {{ register_form.password() }}
+            {{ register_form.password(placeholder="Не более 15 символов") }}
 
             {{ register_form.confirm_password.label }}
-            {{ register_form.confirm_password() }}
+            {{ register_form.confirm_password(placeholder="Не более 15 символов") }}
 
             {{ register_form.submit(class_='submit')}}
         </form>

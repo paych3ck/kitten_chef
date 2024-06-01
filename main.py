@@ -8,7 +8,7 @@ from miscs import convert_datetime_in_feed, \
     process_notes
 from forms import AddFriendForm, \
     UserSettingsForm, RegisterForm, LoginForm, \
-    PasswordRecoveryForm, AddPostForm
+    PasswordRecoveryForm, AddPostForm, ChangePasswordForm
 
 from flask import Flask, request, render_template, \
     redirect, send_from_directory, url_for, flash, \
@@ -254,6 +254,33 @@ def settings():
                            user_settings_form=user_settings_form)
 
 
+@application.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    change_password_form = ChangePasswordForm()
+
+    if change_password_form.validate_on_submit():
+        old_password = change_password_form.old_password.data
+        new_password = change_password_form.new_password.data
+        confirm_new_password = change_password_form.confirm_new_password.data
+        user_data = db.get_user_by_id(current_user.id)
+
+        if not check_password_hash(user_data['password_hash'], old_password):
+            flash('Старый пароль неверен!', category='error')
+            return redirect(url_for('change_password'))
+
+        if new_password != confirm_new_password:
+            flash('Пароли должны совпадать!', category='error')
+            return redirect(url_for('change_password'))
+
+        new_password_hash = generate_password_hash(new_password)
+        db.update_user_password(user_data['email'], new_password_hash)
+        return redirect(url_for('login'))
+
+    return render_template('change_password.html',
+                           change_password_form=change_password_form)
+
+
 @application.route('/add_post', methods=['GET', 'POST'])
 @login_required
 def add_post():
@@ -263,7 +290,17 @@ def add_post():
         user_id = current_user.id
         content = add_post_form.content.data
         note_id = db.add_note(user_id, 'post')
-        db.add_post_detail(note_id, content)
+
+        image_path = 'None'
+        if add_post_form.images.data:
+            image_file = add_post_form.images.data
+            filename = secure_filename(image_file.filename)
+            image_path = os.path.join(
+                application.config['UPLOAD_FOLDER'], filename)
+            image_file.save(image_path)
+            image_path = filename
+
+        db.add_post_detail(note_id, content, image_path)
         cache.delete('view/%s' % url_for('feed'))
         return redirect(url_for('feed'))
 
@@ -277,8 +314,21 @@ def add_recipe():
         recipe_name = request.form['recipe_name']
         ingredients, steps = process_recipe(request.form)
         user_id = current_user.id
+
+        print(request.form)
+
+        image_path = 'None'
+        if request.files['recipe_image']:
+            image_file = request.files['recipe_image']
+            filename = secure_filename(image_file.filename)
+            image_path = os.path.join(
+                application.config['UPLOAD_FOLDER'], filename)
+            image_file.save(image_path)
+            image_path = filename
+
         note_id = db.add_note(user_id, 'recipe')
-        db.add_recipe_detail(note_id, recipe_name, ingredients, steps)
+        db.add_recipe_detail(note_id, recipe_name,
+                             ingredients, steps, image_path)
         cache.delete('view/%s' % url_for('feed'))
         return redirect(url_for('feed'))
 
@@ -290,17 +340,18 @@ def add_recipe():
 def add_video_recipe():
     if request.method == 'POST':
         recipe_name = request.form['recipe_name']
-        file = request.files['recipe_video']
+        video_file = request.files['recipe_video']
 
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(application.config['UPLOAD_FOLDER'], filename)
-        file.save(file_path)
+        filename = secure_filename(video_file.filename)
+        video_path = os.path.join(
+            application.config['UPLOAD_FOLDER'], filename)
+        video_file.save(video_path)
 
-        video_url = file_path
+        video_path = filename
 
         user_id = current_user.id
         note_id = db.add_note(user_id, 'video_recipe')
-        db.add_video_recipe_detail(note_id, recipe_name, video_url)
+        db.add_video_recipe_detail(note_id, recipe_name, video_path)
         cache.delete('view/%s' % url_for('feed'))
 
         return redirect(url_for('feed'))
@@ -310,7 +361,6 @@ def add_video_recipe():
 
 @application.route('/friends', methods=['GET', 'POST'])
 @login_required
-@cache.cached(timeout=300, key_prefix=lambda: f'friends_{current_user.id}')
 def friends():
     pending_invites = db.check_pending_invites(current_user.id)
     friends = db.get_all_friends(current_user.id)

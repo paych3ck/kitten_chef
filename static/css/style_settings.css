@@ -8,7 +8,7 @@ body {
 
 h1 {
     text-align: center;
-    margin-top: 0;
+    /* margin-top: 0; */
     font-family: var(--header-font);
     font-size: 32px;
 }
@@ -82,4 +82,39 @@ input {
 .button-action:hover {
     background-color: #5f3821;
     color: var(--main-bg-color);
+}
+
+.change-password-link {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.change-password-link a {
+    color: var(--header-color);
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.change-password-link a:hover {
+    text-decoration: underline;
+}
+
+.flash {
+    padding: 10px;
+
+}
+
+.flash.error {
+    width: 550px;
+    margin: 50px auto;
+    border: 4px solid rgb(84, 46, 14);
+    box-shadow: 2px 2px 10px #412701;
+    background-color: #885638;
+    border-radius: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* margin-top: 48px; */
 }

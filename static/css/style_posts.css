@@ -38,10 +38,17 @@ li img {
     width: 100%;
     height: auto;
     border-radius: 40px;
-    /* Чтобы совпадало с элементом note */
 }
 
-.notes-container {}
+.note-image {
+    width: 50%;
+    height: auto;
+    border-radius: 40px;
+    display: block;
+    /* Ensure image is block-level */
+    margin: 0 auto;
+    /* Center the image */
+}
 
 .note-avatar {
     width: 50px;
@@ -108,8 +115,8 @@ a:hover {
     height: 100px;
     width: 90%;
     background: #d6b289;
-    border-radius: 40px;
     resize: none;
+    font-size: 20px;
 }
 
 .submit-comment-btn {
@@ -177,7 +184,6 @@ hr {
     width: 24px;
     height: 24px;
     transition: all 0.3s ease;
-    /* Плавное изменение */
 }
 
 .toggle-comments-btn:hover img {
@@ -197,7 +203,14 @@ hr {
 
 .start-timer-btn img {
     width: 24px;
-    /* задайте нужный размер */
     height: 24px;
-    /* задайте нужный размер */
+}
+
+.comment-body {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.comment-content {
+    white-space: normal;
 }

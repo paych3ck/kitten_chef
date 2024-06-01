@@ -19,11 +19,11 @@ document.querySelectorAll('.favorite-button').forEach(button => {
             .then(data => {
                 if (data.status === 'favorite added') {
                     this.dataset.favorited = 'true';
-                    img.src = 'static/images/favorite_hover.svg'; // Обновляем изображение на "в избранном"
+                    img.src = '/static/images/favorite_hover.svg';
                     favoriteCountSpan.textContent = currentFavorites + 1;
                 } else if (data.status === 'favorite removed') {
                     this.dataset.favorited = 'false';
-                    img.src = 'static/images/favorite_idle.svg'; // Обновляем изображение на "не в избранном"
+                    img.src = '/static/images/favorite_idle.svg';
                     favoriteCountSpan.textContent = currentFavorites - 1;
                 }
             });
@@ -51,11 +51,11 @@ document.querySelectorAll('.like-button').forEach(button => {
             .then(data => {
                 if (data.status === 'like added') {
                     this.dataset.liked = 'true';
-                    img.src = 'static/images/like_hover.svg'
+                    img.src = '/static/images/like_hover.svg'
                     likeCountSpan.textContent = currentLikes + 1;
                 } else if (data.status === 'like removed') {
                     this.dataset.liked = 'false';
-                    img.src = 'static/images/like_idle.svg'
+                    img.src = '/static/images/like_idle.svg'
                     likeCountSpan.textContent = currentLikes - 1;
                 }
             });

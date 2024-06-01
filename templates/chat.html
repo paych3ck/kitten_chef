@@ -44,11 +44,14 @@
         socket.emit('join', { chat_user_id: receiverId, room: room })
 
         addMessageBtn.addEventListener('click', () => {
-            console.log('Add message btn is clicked')
-            console.log('User typed:', textareaMessage.value)
+            const messageContent = textareaMessage.value.trim();
+            if (messageContent === '') {
+                alert('Сообщение не может быть пустым');
+                return;
+            }
 
             socket.emit('message', {
-                content: textareaMessage.value, receiver_id: receiverId, room: room,
+                content: messageContent, receiver_id: receiverId, room: room,
                 sender_username: sender_username
             })
             textareaMessage.value = ''
@@ -69,14 +72,13 @@
                         <small class="sent-at">${data.sent_at}</small>
                     </div>
                 </div>
-                <div class="message-content">
-                    ${data.content}
+                <div class="message-body">
+                    <p class="message-content">${data.content}<p>
                 </div>
             `;
 
             chat.append(newMsg);
         };
-
 
         window.addEventListener('beforeunload', function (event) {
             socket.emit('leave', {
@@ -84,14 +86,11 @@
             });
         });
 
-
         socket.on('message', data => {
-            console.log(data)
             newMessage(data)
         })
 
         socket.on('previous_messages', data => {
-            console.log(data)
             chat.innerHTML = ''
 
             data.forEach(el => {
