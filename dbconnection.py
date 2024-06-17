@@ -1,8 +1,9 @@
 from mysql.connector import pooling
+from flask import Flask
 
 
 class DbConnection:
-    def __init__(self, app):
+    def __init__(self, app: Flask):
         self.dbconfig = {
             'host': app.config['DB_HOST'],
             'database': app.config['DB_NAME'],
@@ -225,36 +226,51 @@ class DbConnection:
 
         query = '''
         SELECT notes.*, users.username, users.profile_picture,
-        COUNT(DISTINCT likes.like_id) AS like_count,
-        COUNT(DISTINCT comments.comment_id) AS comment_count,
-        COUNT(DISTINCT favorites.favorite_id) AS favorite_count
+        (SELECT COUNT(DISTINCT likes.like_id)
+        FROM likes
+        WHERE likes.note_id = notes.note_id)
+        AS like_count,
+        (SELECT COUNT(DISTINCT comments.comment_id)
+        FROM comments
+        WHERE comments.note_id = notes.note_id)
+        AS comment_count,
+        (SELECT COUNT(DISTINCT favorites.favorite_id)
+        FROM favorites
+        WHERE favorites.note_id = notes.note_id)
+        AS favorite_count
         FROM notes
         INNER JOIN users ON notes.user_id = users.user_id
-        LEFT JOIN likes ON notes.note_id = likes.note_id
-        LEFT JOIN comments ON notes.note_id = comments.note_id
-        LEFT JOIN favorites ON notes.note_id = favorites.note_id
         '''
+
+        conditions = []
+        params = []
 
         if user_id is not None:
             if notes:
-                query += ' WHERE notes.user_id = %s'
+                conditions.append('notes.user_id = %s')
+                params.append(user_id)
 
             if likes:
-                query += ' WHERE likes.user_id = %s'
+                query += '''INNER JOIN likes
+                            ON notes.note_id = likes.note_id '''
+                conditions.append('likes.user_id = %s')
+                params.append(user_id)
 
             if favorites:
-                query += ' WHERE favorites.user_id = %s'
+                query += '''INNER JOIN favorites
+                            ON notes.note_id = favorites.note_id '''
+                conditions.append('favorites.user_id = %s')
+                params.append(user_id)
+
+        if conditions:
+            query += 'WHERE ' + ' AND '.join(conditions)
 
         query += '''
         GROUP BY notes.note_id, users.username, users.profile_picture
         ORDER BY notes.created_at DESC
         '''
 
-        if user_id is not None:
-            cursor.execute(query, (user_id,))
-
-        else:
-            cursor.execute(query)
+        cursor.execute(query, tuple(params))
 
         res = cursor.fetchall()
         cursor.close()
@@ -313,7 +329,7 @@ class DbConnection:
         connection.close()
         return res
 
-    def get_messages_for_chat(self, user_id_1, user_id_2):
+    def get_messages_for_chat(self, user_id_1: int, user_id_2: int):
         connection = self.connect()
         cursor = connection.cursor(dictionary=True)
 
@@ -339,7 +355,7 @@ class DbConnection:
         connection.close()
         return res
 
-    def get_chats_for_user_by_id(self, user_id):
+    def get_chats_for_user_by_id(self, user_id: int):
         connection = self.connect()
         cursor = connection.cursor(dictionary=True)
 
@@ -409,11 +425,11 @@ class DbConnection:
         connection.close()
         return res
 
-    def get_user_by_username(self, value):
+    def get_user_by_username(self, value: str):
         return self.__get_user_by('username', value)
 
-    def get_user_by_email(self, value):
-        return self.__get_user_by('email', value)
+    def get_user_by_email(self, email: str):
+        return self.__get_user_by('email', email)
 
     def get_user_by_id(self, value):
         return self.__get_user_by('user_id', value)
@@ -462,7 +478,10 @@ class DbConnection:
     def update_user_profile_picture(self, id, value):
         return self.__update_user_info_by(id, 'profile_picture', value)
 
-    def send_friend_request(self, user_id, friend_id):
+    def send_friend_request(self, user_id: int, friend_id: int):
+        """
+        Отправка запроса в друзья и создания соответствующей записи в БД.
+        """
         connection = self.connect()
         cursor = connection.cursor(buffered=True, dictionary=True)
 
@@ -477,7 +496,25 @@ class DbConnection:
         cursor.close()
         connection.close()
 
-    def confirm_friend_request(self, user_id, friend_id):
+    def check_busy_nickname(self, nickname: str):
+        """
+        Проверка на наличие указанного ника.
+        """
+        connection = self.connect()
+        cursor = connection.cursor(buffered=True, dictionary=True)
+
+        query = '''
+        SELECT username from users
+        WHERE username = %s
+        '''
+
+        cursor.execute(query, (nickname, ))
+        busy = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return busy
+
+    def confirm_friend_request(self, user_id: int, friend_id: int):
         connection = self.connect()
         cursor = connection.cursor(buffered=True, dictionary=True)
 
@@ -499,7 +536,7 @@ class DbConnection:
         cursor.close()
         connection.close()
 
-    def delete_friend(self, user_id, friend_id):
+    def delete_friend(self, user_id: int, friend_id: int):
         connection = self.connect()
         cursor = connection.cursor()
 
@@ -514,7 +551,7 @@ class DbConnection:
         cursor.close()
         connection.close()
 
-    def check_friendship_status(self, user_id, friend_id):
+    def check_friendship_status(self, user_id: int, friend_id: int):
         connection = self.connect()
         cursor = connection.cursor(buffered=True, dictionary=True)
 
@@ -529,7 +566,7 @@ class DbConnection:
         connection.close()
         return 'not_friends' if result is None else result['status']
 
-    def check_pending_invites(self, user_id):
+    def check_pending_invites(self, user_id: int):
         connection = self.connect()
         cursor = connection.cursor(dictionary=True)
 
@@ -547,7 +584,10 @@ class DbConnection:
         connection.close()
         return pending_invites
 
-    def get_all_friends(self, user_id):
+    def get_all_friends(self, user_id: int):
+        """
+        Получение списка друзей для пользователя с `id`, равным `user_id`
+        """
         connection = self.connect()
         cursor = connection.cursor(dictionary=True)
 

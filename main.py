@@ -38,7 +38,7 @@ db = DbConnection(application)
 
 
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(user_id: int):
     user_data = db.get_user_by_id(user_id)
     return User(user_data)
 
@@ -72,15 +72,24 @@ def register():
 
         username = register_form.username.data
         email = register_form.email.data
+        user_data = db.get_user_by_email(email)
+
+        if db.check_busy_nickname(username):
+            flash('Пользователь с таким логином уже существует!',
+                  category='error')
+            return redirect(url_for('register'))
+
+        if user_data:
+            flash('Пользователь с такой почтой уже существует!',
+                  category='error')
+            return redirect(url_for('register'))
+
         password_hash = generate_password_hash(register_form.password.data)
         db.add_user((username, email, password_hash))
-
         html_body = render_template('welcome_mail.html', username=username)
         msg = Message('Добро пожаловать!', recipients=[email], html=html_body)
         mail.send(msg)
-
         cache.delete('view/%s' % url_for('feed'))
-
         return redirect(url_for('login'))
 
     return render_template('register.html', register_form=register_form)
@@ -97,9 +106,7 @@ def login():
                                              login_form.password.data):
             userlogin = User(user_data)
             login_user(userlogin)
-
             cache.delete('view/%s' % url_for('feed'))
-
             return redirect(url_for('feed'))
 
         flash('Ошибка авторизации!', category='error')
@@ -395,10 +402,12 @@ def like_post():
 
     if db.has_like(user_id, note_id):
         db.remove_like(user_id, note_id)
+        cache.delete('view/%s' % url_for('feed'))
         return jsonify({'status': 'like removed'})
 
     else:
         db.add_like(user_id, note_id)
+        cache.delete('view/%s' % url_for('feed'))
         return jsonify({'status': 'like added'})
 
 
@@ -409,10 +418,12 @@ def favorite_post():
 
     if db.has_favorite(user_id, note_id):
         db.remove_favorite(user_id, note_id)
+        cache.delete('view/%s' % url_for('feed'))
         return jsonify({'status': 'favorite removed'})
 
     else:
         db.add_favorite(user_id, note_id)
+        cache.delete('view/%s' % url_for('feed'))
         return jsonify({'status': 'favorite added'})
 
 
@@ -452,6 +463,7 @@ def feed():
 def likes():
     user_id = current_user.id
     liked_notes = db.get_notes(user_id=user_id, likes=True)
+    print(liked_notes)
     notes = process_notes(db, liked_notes, user_id)
     return render_template('likes.html', notes=notes)
 
@@ -483,7 +495,7 @@ def user_profile(username):
     user_id = current_user.id
     friend_id = user_info['user_id']
     notes = db.get_notes(user_id=friend_id, notes=True)
-    notes = process_notes(db, notes, friend_id)
+    notes = process_notes(db, notes, user_id)
 
     friendship_status = db.check_friendship_status(user_id, friend_id)
 

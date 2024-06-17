@@ -51,7 +51,6 @@ function updateUnits() {
         const numberInput = step.querySelector('.numberInput');
         const unitDropdown = step.querySelector('.unitDropdown');
         const unitTextField = step.querySelector('.unit_text');
-        const unitText = unitDropdown.options[unitDropdown.selectedIndex].textContent;
 
         if (numberInput && unitDropdown) {
             const number = parseInt(numberInput.value);
@@ -60,6 +59,8 @@ function updateUnits() {
             const unitOptions = getUnitOptions(number, currentUnit);
             unitDropdown.innerHTML = unitOptions;
             unitDropdown.value = currentUnit;
+
+            const unitText = unitDropdown.options[unitDropdown.selectedIndex].textContent;
             unitTextField.value = unitText;
         }
     });
