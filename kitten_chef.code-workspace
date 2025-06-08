@@ -1,0 +1,16 @@
+{
+    "folders": [
+        {
+            "name": "root",
+            "path": "."
+        },
+        {
+            "name": "auth",
+            "path": "services/auth"
+        },
+    ],
+    "settings": {
+        "python.terminal.activateEnvironment": false,
+        "python.poetryPath": "poetry"
+    }
+}

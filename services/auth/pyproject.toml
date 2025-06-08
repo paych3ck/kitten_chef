@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "auth"
+version = "0.0.1"
+description = "auth service for kitten_chef"
+package-mode = false
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+grpcio-reflection = "^1.72.1"
+
+[tool.poetry.group.dev.dependencies]
+grpcio = "^1.72.1"
+grpcio-tools = "^1.72.1"
+protobuf = "^6.31.1"
+
+[tool.poetry.scripts]
+auth-server = "auth.api.server:serve"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
